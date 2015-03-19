@@ -1,5 +1,5 @@
 {
-    "name": "ebizmarts/mandrill",
+    "name": "ebizmarts/magento2-mandrill",
     "description": "Connect Mandrill with Magento",
     "type": "magento2-module",
     "version": "0.42.0-beta10",
