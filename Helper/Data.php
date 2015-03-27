@@ -14,6 +14,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     const XML_PATH_ACTIVE           = 'mandrill/general/active';
     const XML_PATH_APIKEY           = 'mandrill/general/apikey';
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger;
+
+    /**
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(
+        \Magento\Framework\App\Helper\Context $context,
+        \Psr\Log\LoggerInterface $logger
+    )
+    {
+        $this->_logger = $logger;
+        parent::__construct($context);
+    }
 
     public function getApiKey($store = null)
     {
@@ -22,6 +39,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isActive($store = null)
     {
         return $this->scopeConfig->getValue(self::XML_PATH_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
+    }
+    public function log($msg)
+    {
+        $this->_logger->info($msg);
     }
 
 }

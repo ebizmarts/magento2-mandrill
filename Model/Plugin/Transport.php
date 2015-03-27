@@ -12,25 +12,20 @@ namespace Ebizmarts\Mandrill\Model\Plugin;
 class Transport
 {
     /**
-     * @var \Magento\Framework\ObjectManagerInterface $objectManager
-     */
-    protected $_objectManager;
-    /**
      * @var \Ebizmarts\Mandrill\Helper\Data
      */
     protected $_helper;
+
     /**
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Ebizmarts\Mandrill\Helper\Data $helper
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Ebizmarts\Mandrill\Helper\Data $helper
     )
     {
-        $this->_objectManager   = $objectManager;
         $this->_helper          = $helper;
     }
-    public function beforeGetTransport($transport)
+    public function beforeCreate($transport)
     {
         if($this->_helper->isActive())
         {

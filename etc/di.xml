@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
-    <type name="Magento\Framework\Mail\Template\TransportInterfaceFactory">
+    <type name="\Magento\Framework\Mail\TransportInterfaceFactory">
         <plugin name="mandrill-transport" type="Ebizmarts\Mandrill\Model\Plugin\Transport" sortOrder="10"/>
+    </type>
+    <type name="\Magento\Framework\Mail\Template\TransportBuilder">
+        <plugin name="mandrill-transportbuilder" type="Ebizmarts\Mandrill\Model\Plugin\TransportBuilder" sortOrder="10"/>
     </type>
 </config>

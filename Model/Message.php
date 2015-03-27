@@ -10,7 +10,7 @@
 namespace Ebizmarts\Mandrill\Model;
 
 
-class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInterface
+class Message implements \Magento\Framework\Mail\MessageInterface
 {
     protected $_subject     = null;
     protected $_bodyHtml    = null;
@@ -26,6 +26,7 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
     public function setSubject($subject)
     {
         $this->_subject = $subject;
+        return $this;
     }
     public function getSubject()
     {
@@ -34,7 +35,7 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
     public function setBody($body)
     {
         $this->_messageType == self::TYPE_TEXT ? $this->_bodyText = $body : $this->_bodyHtml = $body;
-
+        return $this;
     }
     public function getBody()
     {
@@ -44,8 +45,29 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
     {
         $this->_from        = $fromAddress;
         $this->_fromName    = $name;
+        return $this;
     }
-    public function addTo($toAddress)
+    public function getFromName()
+    {
+        return $this->_fromName;
+    }
+    public function getFrom()
+    {
+        return $this->_from;
+    }
+    public function getType()
+    {
+        return $this->_messageType;
+    }
+    public function getTo()
+    {
+        return $this->_to;
+    }
+    public function getBbc()
+    {
+        return $this->_bcc;
+    }
+    public function addTo($toAddress,$name = null)
     {
         if(is_array($toAddress))
         {
@@ -57,8 +79,9 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
         else {
             array_push($this->_to,$toAddress);
         }
+        return $this;
     }
-    public function addCc($ccAddress)
+    public function addCc($ccAddress,$name = null)
     {
         if(is_array($ccAddress))
         {
@@ -70,9 +93,9 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
         else {
             array_push($this->_to,$ccAddress);
         }
-
+        return $this;
     }
-    public function addBcc($bccAddress)
+    public function addBcc($bccAddress,$name = null)
     {
         if(is_array($bccAddress))
         {
@@ -84,6 +107,7 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
         else {
             array_push($this->_bcc,$bccAddress);
         }
+        return $this;
     }
     public function setMessageType($type)
     {
@@ -98,6 +122,7 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
     {
         $att = array('type' => $mimeType,'name' => $filename,'content'=> base64_encode($body));
         array_push($this->_att,$att);
+        return $this;
     }
     public function getAttachments()
     {
@@ -118,7 +143,6 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
         }
 
         $this->_header[$name] = $value;
-
         return $this;
     }
     public function getHeaders()
@@ -164,8 +188,9 @@ class Message extends \Zend_Mail implements \Magento\Framework\Mail\MessageInter
         return $this;
     }
 
-    public function send()
+    public function send($transport = null)
     {
+
         $email = array();
         foreach($this->_to as $to) {
             $email['to'][] = array(
