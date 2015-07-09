@@ -22,7 +22,15 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     protected $_headers     = array();
     protected $_from        = null;
     protected $_fromName    = null;
+    protected $_tranport    = null;
 
+    public function __construct(
+        \Psr\Log\LoggerInterface $logger,
+        \Ebizmarts\Mandrill\Helper\Data $helper
+    )
+    {
+        $this->_tranport = new Transport($this,$logger,$helper);
+    }
     public function setSubject($subject)
     {
         $this->_subject = $subject;
@@ -222,7 +230,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
         }
 
         try {
-            $result = $this->messages->send($email);
+            $result = $this->_tranport->sendMessage();
         }
         catch(Exception $e ) {
 //            Mage::logException( $e );

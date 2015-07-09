@@ -19,6 +19,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_logger;
 
+
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Psr\Log\LoggerInterface $logger
@@ -44,5 +45,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $this->_logger->info($msg);
     }
-
+    public function getTestSender()
+    {
+        return $this->scopeConfig->getValue(
+            'checkout/payment_failed/identity',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
 }

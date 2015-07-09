@@ -1,12 +1,11 @@
 <?php
 /**
  * Author: info@ebizmarts.com
- * Date: 3/18/15
- * Time: 5:17 PM
+ * Date: 7/8/15
+ * Time: 7:07 PM
  * File: Transport.php
- * Module: magento2
+ * Module: magento2-mandrill
  */
-
 namespace Ebizmarts\Mandrill\Model;
 
 class Transport implements \Magento\Framework\Mail\TransportInterface
@@ -23,7 +22,6 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      * @var \Ebizmarts\Mandrill\Helper\Data
      */
     protected $_helper;
-
     /**
      * @param \Magento\Framework\Mail\MessageInterface $message
      * @param \Psr\Log\LoggerInterface $logger
@@ -39,7 +37,6 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $this->_logger  = $logger;
         $this->_helper  = $helper;
     }
-
     public function sendMessage()
     {
         $apiKey     = $this->_helper->getApiKey();
@@ -52,14 +49,14 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         foreach($this->_message->getTo() as $to)
         {
             $message['to'][] = array(
-              'email' => $to
+                'email' => $to
             );
         }
         foreach($this->_message->getBbc() as $bcc)
         {
             $message['to'][] = array(
-              'email' => $bcc,
-              'type' => 'bcc'
+                'email' => $bcc,
+                'type' => 'bcc'
             );
         }
         if($att = $this->_message->getAttachments()) {
@@ -68,7 +65,6 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         if($headers = $this->_message->getHeaders()) {
             $message['headers'] = $headers;
         }
-
         switch($this->_message->getType())
         {
             case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
@@ -79,7 +75,6 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 break;
         }
         $api->call('messages/send',array("message" => $message));
-
         return;
     }
 }

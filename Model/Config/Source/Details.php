@@ -8,8 +8,10 @@
  */
 
 namespace Ebizmarts\Mandrill\Model\Config\Source;
+use Mandrill_Error;
 
-class Details   implements \Magento\Framework\Option\ArrayInterface
+
+class Details implements \Magento\Framework\Option\ArrayInterface
 {
     /**
      * @var Mandrill|null
@@ -26,19 +28,30 @@ class Details   implements \Magento\Framework\Option\ArrayInterface
         $this->_helper  = $helper;
         $apiKey = $helper->getApiKey();
         if($apiKey) {
-            $this->_api     = New \Mandrill($apiKey);
-            $this->_options = $this->_api->users->info();
+            try {
+                $this->_api     = New \Mandrill($apiKey);
+                $this->_options = $this->_api->users->info();
+            }
+            catch(Mandrill_Error $e)
+            {
+                $this->_options = 'Invalid APIKEY';
+            }
         }
     }
 
     public function toOptionArray()
     {
-        if($this->_options) {
+        if(is_array($this->_options)) {
             return [
                 ['value'=>'User Name','label'=> $this->_options['username']],
                 ['value'=>'Reputation',     'label'=> $this->_options['reputation']],
                 ['value'=>'Hourly Quota',     'label'=>$this->_options['hourly_quota']],
                 ['value'=>'Backlog',     'label'=>$this->_options['backlog']],
+            ];
+        }
+        else {
+            return [
+                ['value'=>'Error','label'=>$this->_options]
             ];
         }
     }
