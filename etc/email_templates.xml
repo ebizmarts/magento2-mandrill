@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Email/etc/email_templates.xsd">
-    <template id="mandrill_test_template" label="Mandrill Test Email" file="test.html" type="html" module="Ebizmarts_Mandrill"/>
+    <template id="mandrill_test_template" label="Mandrill Test Email" file="test.html" type="html" module="Ebizmarts_Mandrill" area="frontend"/>
 </config>
