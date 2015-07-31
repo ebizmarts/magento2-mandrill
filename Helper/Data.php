@@ -79,7 +79,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function saveMail($mailType,$mail,$name,$couponCode,$storeId)
     {
         if ($couponCode != '') {
-            $coupon = $this->_objectManager->create('Magento\SalesRule\Model\Coupon')->loadByCode($couponCode)
+            $coupon = $this->_objectManager->create('Magento\SalesRule\Model\Coupon')->loadByCode($couponCode);
             $rule = $this->_objectManager->create('Magento\SalesRule\Model\Rule')->load($coupon->getRuleId());
             $couponAmount = $rule->getDiscountAmount();
             switch ($rule->getSimpleAction()) {
