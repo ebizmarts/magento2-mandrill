@@ -6,7 +6,7 @@
  * File: Mailsent.php
  * Module: magento2-mandrill
  */
-namespace Ebizmarts\Mailsent\Model\Resource;
+namespace Ebizmarts\Mandrill\Model\Resource;
 
 class Mailsent extends \Magento\Framework\Model\Resource\Db\AbstractDb
 {

@@ -18,7 +18,7 @@ class Mailsent extends \Magento\Framework\Model\AbstractModel
     protected function _construct()
     {
         parent::_construct();
-        $this->_init('Ebizmarts\Madrill\Model\Resource\Mailsent');
+        $this->_init('Ebizmarts\Mandrill\Model\Resource\Mailsent');
     }
 
 }
