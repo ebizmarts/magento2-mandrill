@@ -59,12 +59,7 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
     }
     public function getPxParams()
     {
-        $modules = $this->_loader->load();
-        $v = "";
-        if(isset($modules['Ebizmarts_Mandrill']))
-        {
-            $v =$modules['Ebizmarts_Mandrill']['setup_version'];
-        }
+        $v = $this->getVersion();
         $extension = "Mandrill;{$v}";
         $mageEdition = $this->_metaData->getEdition();
         switch($mageEdition)
