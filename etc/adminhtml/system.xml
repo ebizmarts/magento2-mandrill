@@ -9,7 +9,10 @@
             <label>Mandrill</label>
             <tab>magemonkey</tab>
             <resource>Ebizmarts_Mandrill::config_mandrill</resource>
-            <group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="hint" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                <frontend_model>Ebizmarts\Mandrill\Block\Adminhtml\System\Config\Fieldset\Hint</frontend_model>
+            </group>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Mandrill General Configuration</label>
                 <field id="active" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enabled</label>
