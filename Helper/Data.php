@@ -106,4 +106,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setSentAt($date->gmtDate())
             ->save();
     }
+    public function isSubscribed($email, $list, $storeId)
+    {
+        $collection = $this->_objectManager->create('\Ebizmarts\Mandrill\Model\Unsubscribe')->getCollection();
+        $collection->addFieldToFilter('main_table.email', array('eq' => $email))
+            ->addFieldToFilter('main_table.list', array('eq' => $list))
+            ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
+        if($collection->getSize() == 0)
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
 }
