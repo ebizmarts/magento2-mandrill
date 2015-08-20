@@ -18,7 +18,11 @@ class Unsubscribe extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\View\Result\PageFactory
      */
     protected $_resultPageFactory;
-
+    /**
+     * @var \Magento\Framework\Controller\ResultFactory
+     */
+    protected $_resultRedirectFactory;
+    protected $messageManager;
     /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
@@ -33,6 +37,8 @@ class Unsubscribe extends \Magento\Framework\App\Action\Action
         parent::__construct($context);
         $this->_objectManager = $objectManager;
         $this->_resultPageFactory = $resultPageFactory;
+        $this->_resultRedirectFactory = $context->getResultRedirectFactory();
+        $this->messageManager = $context->getMessageManager();
     }
     public function execute()
     {
@@ -55,11 +61,16 @@ class Unsubscribe extends \Magento\Framework\App\Action\Action
                 $unsubscribe->save();
                 $this->messageManager->addNotice("You are unsubcribed from $list");
             }
+            else
+            {
+                $this->messageManager->addNotice("You are already unsubcribed from $list");
+            }
         }
         else {
             $this->messageManager->addNotice("Invalid url format");
         }
-        $this->_redirect("/");
-
+        $resultRedirect = $this->_resultRedirectFactory->create();
+        $resultRedirect->setPath('/');
+        return $resultRedirect;
     }
 }
