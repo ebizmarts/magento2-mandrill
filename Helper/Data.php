@@ -26,6 +26,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_objectManager;
 
+    protected $_subscribed;
+
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -40,6 +42,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $this->_logger = $logger;
         $this->_objectManager = $objectManager;
+        $this->_subscribed = array();
         parent::__construct($context);
     }
 
@@ -111,48 +114,62 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function isSubscribed($email, $list, $storeId)
     {
+        $subscribed = $this->_subscribed;
+        $isSubscribed = $subscribed[$storeId][$list][$email];
+        if(!isset($isSubscribed)) {
+            $this->log('not cached');
+            return $this->_checkSubscription($email, $list, $storeId);
+        }else{
+            $this->log('cached');
+            return $isSubscribed;
+        }
+    }
+
+    private function _checkSubscription($email, $list, $storeId){
         $collection = $this->_objectManager->create('\Ebizmarts\Mandrill\Model\Unsubscribe')->getCollection();
         $collection->addFieldToFilter('main_table.email', array('eq' => $email))
             ->addFieldToFilter('main_table.list', array('eq' => $list))
             ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
-        if($collection->getSize() == 0)
-        {
+        if ($collection->getSize() == 0) {
+            $this->_subscribed[$storeId][$list][$email] = 'true';
+            $this->log('true');
             return true;
-        }
-        else{
+        } else {
+            $this->_subscribed[$storeId][$list][$email] = 'false';
+            $this->log('false');
             return false;
         }
     }
-    public function getLists()
-    {
-        $types = array();
-        //$storeId = Mage::app()->getStore()->getStoreId();
-        $moduleList = $this->_objectManager()->get('\Magento\Framework\Module\ModuleList');
-        if($moduleList->getOne('Ebizmarts_AbandonedCart'))
-        {
-            $lists['abandonedcart'] = array('listname' => $this->_objectManager()->get('\Ebizmarts\AbandonedCart\Helper\Data')->__('Abandoned Carts List'));
-        }
-//        if($this->_objectManager('\Ebizmarts\AbandonedCart\Helper\Data')->getConfig())
-//
-//
-//        foreach ($lists as $key => $data) {
-//            if (isset($data['listname'])) {
-//                if (Mage::getStoreConfig("ebizmarts_autoresponder/$key/active", $storeId) || ($key == 'abandonedcart' && Mage::getStoreConfig("ebizmarts_abandonedcart/general/active", $storeId))) {
-//                    $types[$key]['listname'] = (string)$data['listname'];
-//                    $collection = Mage::getModel('ebizmarts_autoresponder/unsubscribe')->getCollection();
-//                    $email = $this->_getEmail();
-//                    $collection->addFieldToFilter('main_table.email', array('eq' => $email))
-//                        ->addFieldToFilter('main_table.list', array('eq' => $key))
-//                        ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
-//                    if ($collection->getSize() > 0) {
-//                        $types[$key]['checked'] = "";
-//                    } else {
-//                        $types[$key]['checked'] = "checked";
-//                    }
-//                }
-//            }
+//    public function getLists()
+//    {
+//        $types = array();
+//        //$storeId = Mage::app()->getStore()->getStoreId();
+//        $moduleList = $this->_objectManager()->get('\Magento\Framework\Module\ModuleList');
+//        if($moduleList->getOne('Ebizmarts_AbandonedCart'))
+//        {
+//            $lists['abandonedcart'] = array('listname' => $this->_objectManager()->get('\Ebizmarts\AbandonedCart\Helper\Data')->__('Abandoned Carts List'));
 //        }
-        return $types;
-    }
+////        if($this->_objectManager('\Ebizmarts\AbandonedCart\Helper\Data')->getConfig())
+////
+////
+////        foreach ($lists as $key => $data) {
+////            if (isset($data['listname'])) {
+////                if (Mage::getStoreConfig("ebizmarts_autoresponder/$key/active", $storeId) || ($key == 'abandonedcart' && Mage::getStoreConfig("ebizmarts_abandonedcart/general/active", $storeId))) {
+////                    $types[$key]['listname'] = (string)$data['listname'];
+////                    $collection = Mage::getModel('ebizmarts_autoresponder/unsubscribe')->getCollection();
+////                    $email = $this->_getEmail();
+////                    $collection->addFieldToFilter('main_table.email', array('eq' => $email))
+////                        ->addFieldToFilter('main_table.list', array('eq' => $key))
+////                        ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
+////                    if ($collection->getSize() > 0) {
+////                        $types[$key]['checked'] = "";
+////                    } else {
+////                        $types[$key]['checked'] = "checked";
+////                    }
+////                }
+////            }
+////        }
+//        return $types;
+//    }
 
 }

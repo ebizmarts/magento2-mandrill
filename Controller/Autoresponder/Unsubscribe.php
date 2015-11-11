@@ -53,7 +53,8 @@ class Unsubscribe extends \Magento\Framework\App\Action\Action
             $collection = $this->_objectManager->create('\Ebizmarts\Mandrill\Model\Unsubscribe')->getCollection();
             $collection->addFieldToFilter('main_table.email', array('eq' => $email))
                 ->addFieldToFilter('main_table.list', array('eq' => $list))
-                ->addFieldToFilter('main_table.store_id', array('eq' => $store));
+                ->addFieldToFilter('main_table.store_id', array('eq' => $store))
+                ->limit(1);
             if($collection->getSize() == 0)
             {
                 $unsubscribe = $this->_objectManager->create('\Ebizmarts\Mandrill\Model\Unsubscribe');

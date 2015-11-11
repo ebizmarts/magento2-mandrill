@@ -97,29 +97,34 @@ class InstallSchema  implements InstallSchemaInterface
                 null,
                 ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
                 'Mail Id'
-            )
-            ->addColumn(
+            )->addColumn(
                 'store_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
                 ['nullable' => true, 'default' => null],
                 'Store Id'
-            )
-            ->addColumn(
+            )->addIndex(
+                $installer->getIdxName('mandrill_unsubscribe', ['store_id']),
+                ['store_id']
+            )->addColumn(
                 'email',
                 \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                 128,
                 ['nullable'=>true, 'default'=> null],
                 'Customer Email'
-            )
-            ->addColumn(
+            )->addIndex(
+                $installer->getIdxName('mandrill_unsubscribe', ['email']),
+                ['email']
+            )->addColumn(
                 'list',
                 \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                 128,
                 ['nullable'=>true,'default'=>null],
                 'Coupon Number'
-            )
-            ->addColumn(
+            )->addIndex(
+                $installer->getIdxName('mandrill_unsubscribe', ['list']),
+                ['list']
+            )->addColumn(
                 'unsubscribed_at',
                 \Magento\Framework\DB\Ddl\Table::TYPE_DATETIME,
                 '12,4',
