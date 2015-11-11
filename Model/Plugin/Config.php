@@ -1,11 +1,14 @@
 <?php
 /**
- * Author: info@ebizmarts.com
- * Date: 8/10/15
- * Time: 4:21 PM
- * File: Config.php
- * Module: magento2-mandrill
+ * Ebizmarts_Mandrill Magento JS component
+ *
+ * @category    Ebizmarts
+ * @package     Ebizmarts_Mandrill
+ * @author      Ebizmarts Team <info@ebizmarts.com>
+ * @copyright   Ebizmarts (http://ebizmarts.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 namespace Ebizmarts\Mandrill\Model\Plugin;
 
 class Config

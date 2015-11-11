@@ -1,11 +1,14 @@
 <?php
 /**
- * Author: info@ebizmarts.com
- * Date: 7/8/15
- * Time: 7:07 PM
- * File: Transport.php
- * Module: magento2-mandrill
+ * Ebizmarts_Mandrill Magento JS component
+ *
+ * @category    Ebizmarts
+ * @package     Ebizmarts_Mandrill
+ * @author      Ebizmarts Team <info@ebizmarts.com>
+ * @copyright   Ebizmarts (http://ebizmarts.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 namespace Ebizmarts\Mandrill\Model;
 
 class Transport implements \Magento\Framework\Mail\TransportInterface

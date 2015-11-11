@@ -1,11 +1,14 @@
 <?php
 /**
- * Author: info@ebizmarts.com
- * Date: 8/3/15
- * Time: 12:15 PM
- * File: Unsubscribe.php
- * Module: magento2-mandrill
+ * Ebizmarts_Mandrill Magento JS component
+ *
+ * @category    Ebizmarts
+ * @package     Ebizmarts_Mandrill
+ * @author      Ebizmarts Team <info@ebizmarts.com>
+ * @copyright   Ebizmarts (http://ebizmarts.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 namespace Ebizmarts\Mandrill\Controller\Autoresponder;
 
 class Unsubscribe extends \Magento\Framework\App\Action\Action

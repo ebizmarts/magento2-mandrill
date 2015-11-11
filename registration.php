@@ -9,18 +9,8 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Ebizmarts\Mandrill\Model\Resource;
-
-class Unsubscribe extends \Magento\Framework\Model\Resource\Db\AbstractDb
-{
-    /**
-     * Model Initialization
-     *
-     * @return void
-     */
-    protected function _construct()
-    {
-        $this->_init('mandrill_unsubscribe', 'id');
-    }
-
-}
+\Magento\Framework\Component\ComponentRegistrar::register(
+    \Magento\Framework\Component\ComponentRegistrar::MODULE,
+    'Ebizmarts_Mandrill',
+    __DIR__
+);

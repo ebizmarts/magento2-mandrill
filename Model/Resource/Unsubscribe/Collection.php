@@ -1,11 +1,14 @@
 <?php
 /**
- * Author: info@ebizmarts.com
- * Date: 8/3/15
- * Time: 12:31 PM
- * File: Collection.php
- * Module: magento2-mandrill
+ * Ebizmarts_Mandrill Magento JS component
+ *
+ * @category    Ebizmarts
+ * @package     Ebizmarts_Mandrill
+ * @author      Ebizmarts Team <info@ebizmarts.com>
+ * @copyright   Ebizmarts (http://ebizmarts.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 namespace Ebizmarts\Mandrill\Model\Resource\Unsubscribe;
 
 class Collection   extends \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection
