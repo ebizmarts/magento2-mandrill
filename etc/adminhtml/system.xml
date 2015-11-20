@@ -50,14 +50,14 @@
                         <field id="*/*/active">1</field>
                     </depends>
                 </field>
-                <field id="mapping" translate="label comment tooltip" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Map Mandrill Tamplates</label>
-                    <frontend_model>Ebizmarts\Mandrill\Block\Adminhtml\System\Config\Form\Field\Templatemap</frontend_model>
-                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
-                    <depends>
-                        <field id="*/*/active">1</field>
-                    </depends>
-                </field>
+                <!--<field id="mapping" translate="label comment tooltip" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">-->
+                    <!--<label>Map Mandrill Tamplates</label>-->
+                    <!--<frontend_model>Ebizmarts\Mandrill\Block\Adminhtml\System\Config\Form\Field\Templatemap</frontend_model>-->
+                    <!--<backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>-->
+                    <!--<depends>-->
+                        <!--<field id="*/*/active">1</field>-->
+                    <!--</depends>-->
+                <!--</field>-->
                 <field id="test_email" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Send test email to</label>
                     <depends>
