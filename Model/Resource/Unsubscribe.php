@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\Mandrill\Model\Resource;
 
-class Unsubscribe extends \Magento\Framework\Model\Resource\Db\AbstractDb
+class Unsubscribe extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * Model Initialization

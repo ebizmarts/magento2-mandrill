@@ -11,12 +11,12 @@
 
 namespace Ebizmarts\Mandrill\Controller\Autoresponder;
 
+/**
+ * Class Unsubscribe
+ * @package Ebizmarts\Mandrill\Controller\Autoresponder
+ */
 class Unsubscribe extends \Magento\Framework\App\Action\Action
 {
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $_objectManager;
     /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
@@ -25,6 +25,9 @@ class Unsubscribe extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Controller\ResultFactory
      */
     protected $_resultRedirectFactory;
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
     protected $messageManager;
     /**
      * @param \Magento\Framework\App\Action\Context $context
@@ -33,16 +36,18 @@ class Unsubscribe extends \Magento\Framework\App\Action\Action
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory
     )
     {
         parent::__construct($context);
-        $this->_objectManager = $objectManager;
         $this->_resultPageFactory = $resultPageFactory;
         $this->_resultRedirectFactory = $context->getResultRedirectFactory();
         $this->messageManager = $context->getMessageManager();
     }
+
+    /**
+     * @return \Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         $email  = $this->getRequest()->getParam('email', false);

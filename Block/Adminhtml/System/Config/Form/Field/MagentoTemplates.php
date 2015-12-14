@@ -24,25 +24,20 @@ class MagentoTemplates extends \Magento\Framework\View\Element\Html\Select
      */
     protected $_magentoTemplatesSource;
 
-    protected $_logger;
-
     /**
      * MagentoTemplates constructor.
      * @param \Magento\Framework\View\Element\Context $context
      * @param \Magento\Config\Model\Config\Source\Email\Template $templateSource
-     * @param \Psr\Log\LoggerInterface $logger
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Context $context,
         \Magento\Email\Model\Template\Config $emailConfig,
-        \Psr\Log\LoggerInterface $logger,
         array $data = []
     )
     {
         parent::__construct($context, $data);
         $this->_magentoTemplatesSource = $emailConfig;
-        $this->_logger = $logger;
     }
     public function _toHtml()
     {

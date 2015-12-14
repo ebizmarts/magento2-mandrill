@@ -17,10 +17,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     const XML_PATH_ACTIVE           = 'mandrill/general/active';
     const XML_PATH_APIKEY           = 'mandrill/general/apikey';
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    protected $_logger;
+
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
@@ -31,16 +28,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\ObjectManagerInterface
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\ObjectManagerInterface $objectManager
     )
     {
-        $this->_logger = $logger;
         $this->_objectManager = $objectManager;
         $this->_subscribed = array();
         parent::__construct($context);
