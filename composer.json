@@ -1,6 +1,7 @@
 {
     "name": "ebizmarts/magento2-mandrill",
     "autoload": {
+        "psr4": {"Ebizmarts\\Mandrill":""},
         "files": ["registration.php"]
     },
     "description": "Connect Mandrill with Magento",
