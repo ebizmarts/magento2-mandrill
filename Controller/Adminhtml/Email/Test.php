@@ -27,7 +27,7 @@ class Test extends \Magento\Backend\App\Action
      * @param \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
+        \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder
     )
     {

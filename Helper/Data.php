@@ -31,16 +31,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\ObjectManagerInterface
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\ObjectManagerInterface $objectManager
     )
     {
-        $this->_logger = $logger;
+        $this->_logger = $context->getLogger();
         $this->_objectManager = $objectManager;
         $this->_subscribed = array();
         parent::__construct($context);

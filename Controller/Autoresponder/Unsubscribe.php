@@ -29,16 +29,14 @@ class Unsubscribe extends \Magento\Framework\App\Action\Action
     /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory
     )
     {
         parent::__construct($context);
-        $this->_objectManager = $objectManager;
+        $this->_objectManager = $context->getObjectManager();
         $this->_resultPageFactory = $resultPageFactory;
         $this->_resultRedirectFactory = $context->getResultRedirectFactory();
         $this->messageManager = $context->getMessageManager();
