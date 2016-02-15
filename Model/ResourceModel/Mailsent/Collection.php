@@ -9,18 +9,18 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Ebizmarts\Mandrill\Model\Resource;
+namespace Ebizmarts\Mandrill\Model\ResourceModel\Mailsent;
 
-class Mailsent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+class Collection  extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
-     * Model Initialization
+     * Define resource model
      *
      * @return void
      */
     protected function _construct()
     {
-        $this->_init('mandrill_mailsent', 'id');
+        $this->_init('Ebizmarts\Mandrill\Model\Mailsent', 'Ebizmarts\Mandrill\Model\ResourceModel\Mailsent');
     }
 
 }
