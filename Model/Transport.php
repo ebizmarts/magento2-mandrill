@@ -55,7 +55,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 'email' => $to
             );
         }
-        foreach($this->_message->getBbc() as $bcc)
+        foreach($this->_message->getBcc() as $bcc)
         {
             $message['to'][] = array(
                 'email' => $bcc,
