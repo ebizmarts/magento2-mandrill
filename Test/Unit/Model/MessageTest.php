@@ -30,8 +30,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:setSubject
-     * @covers Ebizmarts\Mandrill\Model\Message:getSubject
+     * @covers Ebizmarts\Mandrill\Model\Message::setSubject
+     * @covers Ebizmarts\Mandrill\Model\Message::getSubject
      */
     public function testSetSubject()
     {
@@ -39,8 +39,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('subject',$this->_message->getSubject());
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:setBody
-     * @covers Ebizmarts\Mandrill\Model\Message:getBody
+     * @covers Ebizmarts\Mandrill\Model\Message::setBody
+     * @covers Ebizmarts\Mandrill\Model\Message::getBody
      */
     public function testSetBody()
     {
@@ -48,8 +48,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('body',$this->_message->getBody());
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:setFrom
-     * @covers Ebizmarts\Mandrill\Model\Message:getFrom
+     * @covers Ebizmarts\Mandrill\Model\Message::setFrom
+     * @covers Ebizmarts\Mandrill\Model\Message::getFrom
      */
     public function testSetFrom()
     {
@@ -57,8 +57,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('from',$this->_message->getFrom());
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:addTo
-     * @covers Ebizmarts\Mandrill\Model\Message:getTo
+     * @covers Ebizmarts\Mandrill\Model\Message::addTo
+     * @covers Ebizmarts\Mandrill\Model\Message::getTo
      */
     public function testAddTo()
     {
@@ -66,7 +66,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('to'),$this->_message->getTo());
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:addCc
+     * @covers Ebizmarts\Mandrill\Model\Message::addCc
      */
     public function testAddCc()
     {
@@ -74,8 +74,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('cc'),$this->_message->getTo());
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:addBcc
-     * @covers Ebizmarts\Mandrill\Model\Message:getBcc
+     * @covers Ebizmarts\Mandrill\Model\Message::addBcc
+     * @covers Ebizmarts\Mandrill\Model\Message::getBcc
      */
     public function testAddBcc()
     {
@@ -83,8 +83,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('bcc'),$this->_message->getBcc());
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:setMessageType
-     * @covers Ebizmarts\Mandrill\Model\Message:getMessageType
+     * @covers Ebizmarts\Mandrill\Model\Message::setMessageType
+     * @covers Ebizmarts\Mandrill\Model\Message::getMessageType
      */
     public function testSetMessageType()
     {
@@ -92,8 +92,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mt',$this->_message->getMessageType());
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:createAttachment
-     * @covers Ebizmarts\Mandrill\Model\Message:getAttachments
+     * @covers Ebizmarts\Mandrill\Model\Message::createAttachment
+     * @covers Ebizmarts\Mandrill\Model\Message::getAttachments
      */
     public function testCreateAttachment()
     {
@@ -104,8 +104,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(\Zend_Mime::TYPE_OCTETSTREAM,$att[0]['type']);
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:addHeader
-     * @covers Ebizmarts\Mandrill\Model\Message:getHeaders
+     * @covers Ebizmarts\Mandrill\Model\Message::addHeader
+     * @covers Ebizmarts\Mandrill\Model\Message::getHeaders
      */
     public function testAddHeader()
     {
@@ -114,8 +114,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value',$h['header']);
     }
     /**
-     * @covers Ebizmarts\Mandrill\Model\Message:setReplyTo
-     * @covers Ebizmarts\Mandrill\Model\Message:getMessageType
+     * @covers Ebizmarts\Mandrill\Model\Message::setReplyTo
+     * @covers Ebizmarts\Mandrill\Model\Message::getMessageType
      */
     public function testSetReplyTo()
     {
