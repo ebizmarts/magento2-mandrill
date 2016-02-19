@@ -71,7 +71,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     {
         return $this->_to;
     }
-    public function getBbc()
+    public function getBcc()
     {
         return $this->_bcc;
     }
@@ -122,6 +122,10 @@ class Message implements \Magento\Framework\Mail\MessageInterface
         $this->_messageType = $type;
         return $this;
     }
+    public function getMessageType()
+    {
+        return $this->_messageType;
+    }
     public function createAttachment($body,
                                      $mimeType    = \Zend_Mime::TYPE_OCTETSTREAM,
                                      $disposition = \Zend_Mime::DISPOSITION_ATTACHMENT,
@@ -150,17 +154,18 @@ class Message implements \Magento\Framework\Mail\MessageInterface
             throw new Zend_Mail_Exception('Cannot set standard header from addHeader()');
         }
 
-        $this->_header[$name] = $value;
+        $this->_headers[$name] = $value;
         return $this;
     }
     public function getHeaders()
     {
-        if(isset($this->_headers[0])) {
-            return $this->_headers[0];
-        }
-        else {
-            return null;
-        }
+        return $this->_headers;
+//        if(isset($this->_headers[0])) {
+//            return $this->_headers[0];
+//        }
+//        else {
+//            return null;
+//        }
     }
     protected function _filterEmail($email)
     {
