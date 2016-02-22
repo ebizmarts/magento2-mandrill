@@ -18,36 +18,47 @@ class Test extends \Magento\Backend\App\Action
      * @var \Magento\Framework\Mail\Template\TransportBuilder
      */
     protected $_transportBuilder;
+    /**
+     * @var \Ebizmarts\Mandrill\Helper\Data
+     */
+    protected $_helper;
 
     /**
+     * Test constructor.
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder
+     * @param \Ebizmarts\Mandrill\Helper\Data $helper
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
+        \Ebizmarts\Mandrill\Helper\Data $helper
     )
     {
         parent::__construct($context);
         $this->_transportBuilder = $transportBuilder;
+        $this->_helper = $helper;
     }
+
+    /**
+     * @covers \Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test::execute
+     */
     public function execute()
     {
         $email      = $this->getRequest()->getParam('email');
-//        $this->_objectManager->get('Ebizmarts\Mandrill\Helper\Data')->sendTestEmail($email);
         $template   = "mandrill_test_template";
-        $transport  = $this->_transportBuilder->setTemplateIdentifier($template)
-            ->setFrom($this->_objectManager->get('Ebizmarts\Mandrill\Helper\Data')->getTestSender())
-            ->addTo($email)
-            ->setTemplateVars([])
-            ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => 1])
-            ->getTransport();
+        $this->_transportBuilder->setTemplateIdentifier($template);
+        $this->_transportBuilder->setFrom($this->_helper->getTestSender());
+        $this->_transportBuilder->addTo($email);
+        $this->_transportBuilder->setTemplateVars([]);
+        $this->_transportBuilder->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => 1]);
+        $transport = $this->_transportBuilder->getTransport();
         $transport->sendMessage();
-        $response   = new Object();
-        $response->setError(0);
+//        $response   = new Object();
+//        $response->setError(0);
         /** @var \Magento\Framework\Controller\Result\Json $resultJson */
         $resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
-        $resultJson->setData($response->toArray());
+        $resultJson->setData(['error'=>0]);
         return $resultJson;
     }
 }

@@ -41,7 +41,6 @@ class TransportTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendMessage()
     {
-        echo __METHOD__;
         $this->_transport->sendMessage();
     }
 }
