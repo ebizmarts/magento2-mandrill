@@ -11,6 +11,9 @@ namespace Ebizmarts\Mandrill\Block\Adminhtml;
 class SendTestEmail extends \Magento\Config\Block\System\Config\Form\Field
 {
     protected $_template    = 'sendemail.phtml';
+    /**
+     * @codeCoverageIgnore
+     */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) {
         $originalData = $element->getOriginalData();
 

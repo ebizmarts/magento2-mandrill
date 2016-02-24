@@ -11,6 +11,9 @@ namespace Ebizmarts\Mandrill\Block\Adminhtml\System\Config;
 
 class Account extends \Magento\Config\Block\System\Config\Form\Field
 {
+    /**
+     * @codeCoverageIgnore
+     */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $values = $element->getValues();

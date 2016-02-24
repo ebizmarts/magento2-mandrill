@@ -32,19 +32,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_logger = $logger;
         parent::__construct($context);
     }
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function getApiKey($store = null)
     {
         return $this->scopeConfig->getValue(self::XML_PATH_APIKEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
     }
+    /**
+     * @codeCoverageIgnore
+     */
     public function isActive($store = null)
     {
         return $this->scopeConfig->getValue(self::XML_PATH_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
     }
+    /**
+     * @codeCoverageIgnore
+     */
     public function log($msg)
     {
         $this->_logger->info($msg);
     }
+    /**
+     * @codeCoverageIgnore
+     */
     public function getTestSender()
     {
         return $this->scopeConfig->getValue(
