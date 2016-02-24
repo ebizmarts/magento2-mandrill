@@ -40,9 +40,6 @@ class Test extends \Magento\Backend\App\Action
         $this->_helper = $helper;
     }
 
-    /**
-     * @covers \Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test::execute
-     */
     public function execute()
     {
         $email      = $this->getRequest()->getParam('email');

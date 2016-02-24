@@ -67,6 +67,10 @@ class TestTest extends \PHPUnit_Framework_TestCase
 
         $this->test = $objectManager->getObject('Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test',['context'=>$context,'transportBuilder'=>$transportB,'helper'=>$helper]);
     }
+
+    /**
+     * @covers Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test::execute
+     */
     public function testExecute()
     {
         $this->_expectResultJson([
