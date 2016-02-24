@@ -9,7 +9,6 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
-
 class Message implements \Magento\Framework\Mail\MessageInterface
 {
     protected $_subject     = null;
@@ -147,11 +146,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
             'date', 'message-id',
         );
         if (in_array(strtolower($name), $prohibit)) {
-            /**
-             * @see Zend_Mail_Exception
-             */
-            #require_once 'Zend/Mail/Exception.php';
-            throw new Zend_Mail_Exception('Cannot set standard header from addHeader()');
+            throw new \Magento\Framework\Exception\LocalizedException(__('Cannot set standard header from addHeader()'));
         }
 
         $this->_headers[$name] = $value;
@@ -160,12 +155,6 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     public function getHeaders()
     {
         return $this->_headers;
-//        if(isset($this->_headers[0])) {
-//            return $this->_headers[0];
-//        }
-//        else {
-//            return null;
-//        }
     }
     protected function _filterEmail($email)
     {
@@ -238,7 +227,6 @@ class Message implements \Magento\Framework\Mail\MessageInterface
             $result = $this->_tranport->sendMessage();
         }
         catch(Exception $e ) {
-//            Mage::logException( $e );
             return false;
         }
         return true;

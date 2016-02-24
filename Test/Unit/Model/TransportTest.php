@@ -32,7 +32,7 @@ class TransportTest extends \PHPUnit_Framework_TestCase
         $helper = $this->getMockBuilder('Ebizmarts\Mandrill\Helper\Data')
             ->disableOriginalConstructor()
             ->getMock();
-        $helper->expects($this->once())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
+        $helper->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
         $this->_transport = $objectManager->getObject('Ebizmarts\Mandrill\Model\Transport',['message'=> $this->_message, 'helper'=>$helper]);
     }
 
@@ -41,6 +41,12 @@ class TransportTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendMessage()
     {
+        $this->_message->addTo('gonzalo@ebizmarts.com');
+        $this->_message->addBcc('gonzalo2@ebizmarts.com');
+        $this->_message->setReplyTo("gonzalo");
+        $this->_message->createAttachment("test att");
+        $this->_transport->sendMessage();
+        $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
         $this->_transport->sendMessage();
     }
 }

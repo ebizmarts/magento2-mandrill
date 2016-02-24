@@ -26,7 +26,11 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $helper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-        $this->_message = $helper->getObject('Ebizmarts\Mandrill\Model\Message');
+        $helperMock = $this->getMockBuilder('Ebizmarts\Mandrill\Helper\Data')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $helperMock->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
+        $this->_message = $helper->getObject('Ebizmarts\Mandrill\Model\Message',['helper'=>$helperMock]);
     }
 
     /**
@@ -64,6 +68,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $this->_message->addTo('to');
         $this->assertEquals(array('to'),$this->_message->getTo());
+        $this->_message->addTo(array('to1','to2'));
+        $this->assertEquals(array('to','to1','to2'),$this->_message->getTo());
     }
     /**
      * @covers Ebizmarts\Mandrill\Model\Message::addCc
@@ -72,6 +78,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $this->_message->addCc('cc');
         $this->assertEquals(array('cc'),$this->_message->getTo());
+        $this->_message->addCc(array('cc1','cc2'));
+        $this->assertEquals(array('cc','cc1','cc2'),$this->_message->getTo());
     }
     /**
      * @covers Ebizmarts\Mandrill\Model\Message::addBcc
@@ -81,15 +89,19 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $this->_message->addBcc('bcc');
         $this->assertEquals(array('bcc'),$this->_message->getBcc());
+        $this->_message->addBcc(array('bcc1','bcc2'));
+        $this->assertEquals(array('bcc','bcc1','bcc2'),$this->_message->getBcc());
     }
     /**
      * @covers Ebizmarts\Mandrill\Model\Message::setMessageType
      * @covers Ebizmarts\Mandrill\Model\Message::getMessageType
+     * @covers Ebizmarts\Mandrill\Model\Message::getType
      */
     public function testSetMessageType()
     {
         $this->_message->setMessageType('mt');
         $this->assertEquals('mt',$this->_message->getMessageType());
+        $this->assertEquals('mt',$this->_message->getType());
     }
     /**
      * @covers Ebizmarts\Mandrill\Model\Message::createAttachment
@@ -113,6 +125,16 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $h = $this->_message->getHeaders();
         $this->assertEquals('value',$h['header']);
     }
+
+    /**
+     * @covers Ebizmarts\Mandrill\Model\Message::addHeader
+     * @expectedException \Magento\Framework\Exception\LocalizedException
+     * @expectedExceptionMessage Cannot set standard header from addHeader()
+     */
+    public function testAddHeaderWithException()
+    {
+        $this->_message->addHeader('to','value');
+    }
     /**
      * @covers Ebizmarts\Mandrill\Model\Message::setReplyTo
      * @covers Ebizmarts\Mandrill\Model\Message::getMessageType
@@ -128,6 +150,15 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     }
     public function testSend()
     {
-        echo "missing ".__METHOD__."\n";
+        $this->_message->setFrom('gonzalo@ebizmarts.com','gonzalo');
+        $this->_message->addTo('gonzalo@ebizmarts.com');
+        $this->_message->addBcc('gonzalo2@ebizmarts.com');
+        $this->_message->setReplyTo("gonzalo");
+        $this->_message->createAttachment("test att");
+        $this->_message->setBody('body');
+        $this->_message->send();
+        $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
+        $this->_message->setBody('body');
+        $this->_message->send();
     }
 }
