@@ -1,8 +1,12 @@
 {
     "name": "ebizmarts/magento2-mandrill",
+    "autoload": {
+        "psr-4": {"Ebizmarts\\Mandrill\\":""},
+        "files": ["registration.php"]
+    },
     "description": "Connect Mandrill with Magento",
     "type": "magento2-module",
-    "version": "3.0.0",
+    "version": "3.0.3",
     "authors": [
         {
             "name": "Ebizmarts Corp",
@@ -21,13 +25,5 @@
     },
     "require" : {
         "mandrill/mandrill": "1.0.*"
-    },
-    "extra": {
-        "map": [
-            [
-                "*",
-                "Ebizmarts/Mandrill"
-            ]
-        ]
     }
 }
