@@ -36,7 +36,7 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
             ->disableAutoload()
             ->setMethods(array('info'))
             ->getMock();
-        $usersMock->expects($this->any())->method('info')->willReturn(['username'=>'gonzalo','reputation'=>1,'hourly_quota'=>10,'backlog'=>0]);
+        $usersMock->expects($this->any())->method('info')->willReturn(['username'=>'gonzalo','reputation'=>1,'hourly_quota'=>10,'backlog'=>0],['account']);
         $mandrillMock->users = $usersMock;
         $this->_details = $objectManager->getObject('Ebizmarts\Mandrill\Model\Config\Source\Details',['helper'=>$helperMock,'api'=>$apiMock]);
     }
@@ -48,12 +48,5 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
     {
         $r = $this->_details->toOptionArray();
         $this->assertEquals([['label'=>'User Name','value'=>'gonzalo'],['label'=>'Reputation','value'=>1],['label'=>'Hourly Quota','value'=>10],['label'=>'Backlog','value'=>0]],$r);
-    }
-    /**
-     * @covers Ebizmarts\Mandrill\Model\Config\Source\Details::toArray
-     */
-    public function testToArray()
-    {
-
     }
 }

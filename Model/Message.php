@@ -21,7 +21,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     protected $_headers     = array();
     protected $_from        = null;
     protected $_fromName    = null;
-    protected $_tranport    = null;
+    protected $_transport    = null;
 
     /**
      * Message constructor.
@@ -35,7 +35,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
         \Ebizmarts\Mandrill\Model\Api\Mandrill $api
     )
     {
-        $this->_tranport = new Transport($this,$logger,$helper,$api);
+        $this->_transport = new Transport($this,$logger,$helper,$api);
     }
     public function setSubject($subject)
     {
@@ -231,9 +231,9 @@ class Message implements \Magento\Framework\Mail\MessageInterface
         }
 
         try {
-            $result = $this->_tranport->sendMessage();
+            $result = $this->_transport->sendMessage();
         }
-        catch(Exception $e ) {
+        catch(\Exception $e ) {
             return false;
         }
         return true;

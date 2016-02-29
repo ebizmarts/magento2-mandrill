@@ -54,8 +54,4 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
-    public function getMandrillInfo()
-    {
-
-    }
 }
