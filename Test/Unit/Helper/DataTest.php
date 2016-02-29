@@ -11,6 +11,7 @@
  * @file: DataTest.php
  */
 namespace Ebizmarts\Mandrill\Test\Unit\Helper;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 class DataTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +20,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $objectManager = new ObjectManager($this);
         $this->_scopeMock = $this->getMockBuilder('Magento\Framework\App\Config\ScopeConfigInterface')
             ->disableOriginalConstructor()
             ->getMock();

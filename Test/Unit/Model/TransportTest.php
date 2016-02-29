@@ -29,11 +29,25 @@ class TransportTest extends \PHPUnit_Framework_TestCase
     {
         $objectManager = new ObjectManager($this);
         $this->_message = $objectManager->getObject('Ebizmarts\Mandrill\Model\Message');
-        $helper = $this->getMockBuilder('Ebizmarts\Mandrill\Helper\Data')
+        $helperMock = $this->getMockBuilder('Ebizmarts\Mandrill\Helper\Data')
             ->disableOriginalConstructor()
             ->getMock();
-        $helper->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
-        $this->_transport = $objectManager->getObject('Ebizmarts\Mandrill\Model\Transport',['message'=> $this->_message, 'helper'=>$helper]);
+        $helperMock->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
+        $apiMock = $this->getMockBuilder('Ebizmarts\Mandrill\Model\Api\Mandrill')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mandrillMock = $this->getMockBuilder('Mandrill')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apiMock->expects($this->any())->method('getApi')->willReturn($mandrillMock);
+        $messagesMock = $this->getMockBuilder('Mandrill\Messages')
+            ->disableOriginalConstructor()
+            ->disableAutoload()
+            ->setMethods(array('send'))
+            ->getMock();
+        $messagesMock->expects($this->any())->method('send')->willReturn(true);
+        $mandrillMock->messages = $messagesMock;
+        $this->_transport = $objectManager->getObject('Ebizmarts\Mandrill\Model\Transport',['message'=> $this->_message, 'helper'=>$helperMock, 'api'=>$apiMock]);
     }
 
     /**
@@ -45,8 +59,8 @@ class TransportTest extends \PHPUnit_Framework_TestCase
         $this->_message->addBcc('gonzalo2@ebizmarts.com');
         $this->_message->setReplyTo("gonzalo");
         $this->_message->createAttachment("test att");
-        $this->_transport->sendMessage();
+        $this->assertEquals(true,$this->_transport->sendMessage());
         $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
-        $this->_transport->sendMessage();
+        $this->assertEquals(true,$this->_transport->sendMessage());
     }
 }

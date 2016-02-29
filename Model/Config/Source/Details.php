@@ -16,21 +16,24 @@ class Details implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var Mandrill|null
      */
-    protected $_api     = null;
     protected $_options = null;
-    protected $_helper  = null;
 
     /**
+     * Details constructor.
      * @param \Ebizmarts\Mandrill\Helper\Data $helper
+     * @param \Ebizmarts\Mandrill\Model\Api\Mandrill $api
      */
-    public function __construct(\Ebizmarts\Mandrill\Helper\Data $helper)
+    public function __construct(
+        \Ebizmarts\Mandrill\Helper\Data $helper,
+        \Ebizmarts\Mandrill\Model\Api\Mandrill $api
+    )
     {
         $this->_helper  = $helper;
         $apiKey = $helper->getApiKey();
         if($apiKey) {
             try {
-                $this->_api     = New \Mandrill($apiKey);
-                $this->_options = $this->_api->users->info();
+//                $this->_api     = New \Mandrill($apiKey);
+                $this->_options = $api->getApi()->users->info();
             }
             catch(Mandrill_Error $e)
             {
@@ -43,10 +46,10 @@ class Details implements \Magento\Framework\Option\ArrayInterface
     {
         if(is_array($this->_options)) {
             return [
-                ['value'=>'User Name','label'=> $this->_options['username']],
-                ['value'=>'Reputation',     'label'=> $this->_options['reputation']],
-                ['value'=>'Hourly Quota',     'label'=>$this->_options['hourly_quota']],
-                ['value'=>'Backlog',     'label'=>$this->_options['backlog']],
+                ['label'=>'User Name','value'=> $this->_options['username']],
+                ['label'=>'Reputation',     'value'=> $this->_options['reputation']],
+                ['label'=>'Hourly Quota',     'value'=>$this->_options['hourly_quota']],
+                ['label'=>'Backlog',     'value'=>$this->_options['backlog']],
             ];
         }
         else {

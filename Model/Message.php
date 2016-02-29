@@ -23,12 +23,19 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     protected $_fromName    = null;
     protected $_tranport    = null;
 
+    /**
+     * Message constructor.
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Ebizmarts\Mandrill\Helper\Data $helper
+     * @param Api\Mandrill $api
+     */
     public function __construct(
         \Psr\Log\LoggerInterface $logger,
-        \Ebizmarts\Mandrill\Helper\Data $helper
+        \Ebizmarts\Mandrill\Helper\Data $helper,
+        \Ebizmarts\Mandrill\Model\Api\Mandrill $api
     )
     {
-        $this->_tranport = new Transport($this,$logger,$helper);
+        $this->_tranport = new Transport($this,$logger,$helper,$api);
     }
     public function setSubject($subject)
     {

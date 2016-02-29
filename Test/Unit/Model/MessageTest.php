@@ -30,7 +30,22 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $helperMock->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
-        $this->_message = $helper->getObject('Ebizmarts\Mandrill\Model\Message',['helper'=>$helperMock]);
+        $apiMock = $this->getMockBuilder('Ebizmarts\Mandrill\Model\Api\Mandrill')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mandrillMock = $this->getMockBuilder('Mandrill')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $apiMock->expects($this->any())->method('getApi')->willReturn($mandrillMock);
+        $messagesMock = $this->getMockBuilder('Mandrill\Messages')
+            ->disableOriginalConstructor()
+            ->disableAutoload()
+            ->setMethods(array('send'))
+            ->getMock();
+        $messagesMock->expects($this->any())->method('send')->willReturn(true);
+        $mandrillMock->messages = $messagesMock;
+
+        $this->_message = $helper->getObject('Ebizmarts\Mandrill\Model\Message',['helper'=>$helperMock,'api'=>$apiMock]);
     }
 
     /**
