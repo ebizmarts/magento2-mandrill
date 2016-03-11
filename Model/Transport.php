@@ -26,6 +26,10 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      */
     protected $_helper;
     /**
+     * @var Api\Mandrill
+     */
+    protected $_api;
+    /**
      * @param \Magento\Framework\Mail\MessageInterface $message
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Ebizmarts\Mandrill\Helper\Data $helper
@@ -33,17 +37,17 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     public function __construct(
         \Magento\Framework\Mail\MessageInterface $message,
         \Psr\Log\LoggerInterface $logger,
-        \Ebizmarts\Mandrill\Helper\Data $helper
+        \Ebizmarts\Mandrill\Helper\Data $helper,
+        \Ebizmarts\Mandrill\Model\Api\Mandrill $api
     )
     {
         $this->_message = $message;
         $this->_logger  = $logger;
         $this->_helper  = $helper;
+        $this->_api     = $api;
     }
     public function sendMessage()
     {
-        $apiKey     = $this->_helper->getApiKey();
-        $api        = New \Mandrill($apiKey);
         $message    = array(
             'subject' => $this->_message->getSubject(),
             'from_name' => $this->_message->getFromName(),
@@ -77,7 +81,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 $message['text'] = $this->_message->getBody();
                 break;
         }
-        $api->call('messages/send',array("message" => $message));
-        return;
+        $this->_api->getApi()->messages->send($message);
+        return true;
     }
 }

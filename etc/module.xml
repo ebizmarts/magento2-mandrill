@@ -1,19 +1,5 @@
 <?xml version="1.0"?>
-<!--
-/**
-* Ebizmarts_Mandrill Magento JS component
-*
-* @category    Ebizmarts
-* @package     Ebizmarts_Mandrill
-* @author      Ebizmarts Team <info@ebizmarts.com>
-* @copyright   Ebizmarts (http://ebizmarts.com)
-* @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Ebizmarts_Mandrill" setup_version="3.0.3">
-        <sequence>
-            <module name="Magento_Store"/>
-        </sequence>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/Module/etc/module.xsd">
+    <module name="Ebizmarts_Mandrill" setup_version="3.1.1">
     </module>
 </config>

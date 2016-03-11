@@ -12,7 +12,6 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
-
 class Message implements \Magento\Framework\Mail\MessageInterface
 {
     protected $_subject     = null;
@@ -25,14 +24,21 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     protected $_headers     = array();
     protected $_from        = null;
     protected $_fromName    = null;
-    protected $_tranport    = null;
+    protected $_transport    = null;
 
+    /**
+     * Message constructor.
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Ebizmarts\Mandrill\Helper\Data $helper
+     * @param Api\Mandrill $api
+     */
     public function __construct(
         \Psr\Log\LoggerInterface $logger,
-        \Ebizmarts\Mandrill\Helper\Data $helper
+        \Ebizmarts\Mandrill\Helper\Data $helper,
+        \Ebizmarts\Mandrill\Model\Api\Mandrill $api
     )
     {
-        $this->_tranport = new Transport($this,$logger,$helper);
+        $this->_transport = new Transport($this,$logger,$helper,$api);
     }
     public function setSubject($subject)
     {
@@ -150,11 +156,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
             'date', 'message-id',
         );
         if (in_array(strtolower($name), $prohibit)) {
-            /**
-             * @see Zend_Mail_Exception
-             */
-            #require_once 'Zend/Mail/Exception.php';
-            throw new Zend_Mail_Exception('Cannot set standard header from addHeader()');
+            throw new \Magento\Framework\Exception\LocalizedException(__('Cannot set standard header from addHeader()'));
         }
 
         $this->_headers[$name] = $value;
@@ -232,10 +234,9 @@ class Message implements \Magento\Framework\Mail\MessageInterface
         }
 
         try {
-            $result = $this->_tranport->sendMessage();
+            $result = $this->_transport->sendMessage();
         }
-        catch(Exception $e ) {
-//            Mage::logException( $e );
+        catch(\Exception $e ) {
             return false;
         }
         return true;
