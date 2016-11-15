@@ -21,15 +21,60 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_logger;
 
+    /**
+     * @var \Magento\SalesRule\Model\Coupon
+     */
+    protected $_coupon;
+
+    /**
+     * @var \Magento\SalesRule\Model\Rule
+     */
+    protected $_rule;
+
+    /**
+     * @var \Ebizmarts\Mandrill\Model\Mailsent
+     */
+    protected $_mailsent;
+
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    protected $_dateTime;
+
+    /**
+     * @var \Ebizmarts\Mandrill\Model\Unsubscribe
+     */
+    protected $_unsubscribe;
+
+    /**
+     * @var array
+     */
+    protected $_subscribed;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\SalesRule\Model\Coupon $coupon
+     * @param \Magento\SalesRule\Model\Rule $rule
+     * @param \Ebizmarts\Mandrill\Model\Mailsent $mailsent
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Ebizmarts\Mandrill\Model\Unsubscribe $unsubscribe
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context
+        \Magento\Framework\App\Helper\Context $context,
+        \Magento\SalesRule\Model\Coupon $coupon,
+        \Magento\SalesRule\Model\Rule $rule,
+        \Ebizmarts\Mandrill\Model\Mailsent $mailsent,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \Ebizmarts\Mandrill\Model\Unsubscribe $unsubscribe
     )
     {
-        $this->_logger = $context->getLogger();;
+        $this->_logger = $context->getLogger();
+        $this->_coupon = $coupon;
+        $this->_rule = $rule;
+        $this->_mailsent = $mailsent;
+        $this->_dateTime = $dateTime;
+        $this->_unsubscribe = $unsubscribe;
+        $this->_subscribed = array();
         parent::__construct($context);
     }
 
@@ -75,8 +120,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function saveMail($mailType,$mail,$name,$couponCode,$storeId)
     {
         if ($couponCode != '') {
-            $coupon = $this->_objectManager->create('Magento\SalesRule\Model\Coupon')->loadByCode($couponCode);
-            $rule = $this->_objectManager->create('Magento\SalesRule\Model\Rule')->load($coupon->getRuleId());
+            $coupon = $this->_coupon->loadByCode($couponCode);
+            $rule = $this->_rule->load($coupon->getRuleId());
             $couponAmount = $rule->getDiscountAmount();
             switch ($rule->getSimpleAction()) {
                 case 'cart_fixed':
@@ -85,13 +130,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'by_percent':
                     $couponType = 2;
                     break;
+                default:
+                    $couponType = 0;
+                    break;
             }
         } else {
             $couponType = 0;
             $couponAmount = 0;
         }
-        $sent = $this->_objectManager->create('Ebizmarts\Mandrill\Model\Mailsent');
-        $date = $this->_objectManager->create('\Magento\Framework\Stdlib\DateTime\DateTime');
+        $sent = $this->_mailsent;
+        $date = $this->_dateTime;
         $sent->setMailType($mailType)
             ->setStoreId($storeId)
             ->setCustomerEmail($mail)
@@ -107,10 +155,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $subscribed = $this->_subscribed;
         $isSubscribed = $subscribed[$storeId][$list][$email];
         if(!isset($isSubscribed)) {
-            $this->log('not cached');
             return $this->_checkSubscription($email, $list, $storeId);
         }else{
-            $this->log('cached');
             return $isSubscribed;
         }
     }
@@ -122,17 +168,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return bool
      */
     private function _checkSubscription($email, $list, $storeId){
-        $collection = $this->_objectManager->create('\Ebizmarts\Mandrill\Model\Unsubscribe')->getCollection();
+        $collection = $this->_unsubscribe->getCollection();
         $collection->addFieldToFilter('main_table.email', array('eq' => $email))
             ->addFieldToFilter('main_table.list', array('eq' => $list))
             ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
         if ($collection->getSize() == 0) {
             $this->_subscribed[$storeId][$list][$email] = 'true';
-            $this->log('true');
             return true;
         } else {
             $this->_subscribed[$storeId][$list][$email] = 'false';
-            $this->log('false');
             return false;
         }
     }
