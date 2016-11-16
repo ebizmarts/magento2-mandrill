@@ -27,7 +27,7 @@ class Test extends \Magento\Backend\App\Action
 
     /**
      * Test constructor.
-     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder
      * @param \Ebizmarts\Mandrill\Helper\Data $helper
      */
