@@ -27,9 +27,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_coupon;
 
     /**
-     * @var \Magento\SalesRule\Model\Rule
+     * @var \Magento\SalesRule\Model\RuleFactory
      */
-    protected $_rule;
+    protected $_ruleRepository;
 
     /**
      * @var \Ebizmarts\Mandrill\Model\Mailsent
@@ -37,9 +37,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_mailsent;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     * @var \Magento\Framework\Stdlib\DateTime\DateTimeFactory
      */
-    protected $_dateTime;
+    protected $_dateFactory;
 
     /**
      * @var \Ebizmarts\Mandrill\Model\Unsubscribe
@@ -52,27 +52,27 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_subscribed;
 
     /**
+     * @param \Magento\Framework\Stdlib\DateTime\DateTimeFactory $dateFactory
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\SalesRule\Model\Coupon $coupon
-     * @param \Magento\SalesRule\Model\Rule $rule
+     * @param \Magento\SalesRule\Model\RuleRepository $ruleRepository
      * @param \Ebizmarts\Mandrill\Model\Mailsent $mailsent
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Ebizmarts\Mandrill\Model\Unsubscribe $unsubscribe
      */
     public function __construct(
+        \Magento\Framework\Stdlib\DateTime\DateTimeFactory $dateFactory,
         \Magento\Framework\App\Helper\Context $context,
         \Magento\SalesRule\Model\Coupon $coupon,
-        \Magento\SalesRule\Model\Rule $rule,
+        \Magento\SalesRule\Model\RuleRepository $ruleRepository,
         \Ebizmarts\Mandrill\Model\Mailsent $mailsent,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Ebizmarts\Mandrill\Model\Unsubscribe $unsubscribe
     )
     {
         $this->_logger = $context->getLogger();
         $this->_coupon = $coupon;
-        $this->_rule = $rule;
+        $this->_ruleRepository = $ruleRepository;
         $this->_mailsent = $mailsent;
-        $this->_dateTime = $dateTime;
+        $this->_dateFactory = $dateFactory;
         $this->_unsubscribe = $unsubscribe;
         $this->_subscribed = array();
         parent::__construct($context);
@@ -121,7 +121,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         if ($couponCode != '') {
             $coupon = $this->_coupon->loadByCode($couponCode);
-            $rule = $this->_rule->load($coupon->getRuleId());
+            $rule = $this->_ruleRepository->getById($coupon->getRuleId());
             $couponAmount = $rule->getDiscountAmount();
             switch ($rule->getSimpleAction()) {
                 case 'cart_fixed':
@@ -139,7 +139,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $couponAmount = 0;
         }
         $sent = $this->_mailsent;
-        $date = $this->_dateTime;
+        $date = $this->_dateFactory->create()->gmtDate();
         $sent->setMailType($mailType)
             ->setStoreId($storeId)
             ->setCustomerEmail($mail)
@@ -147,7 +147,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setCouponNumber($couponCode)
             ->setCouponType($couponType)
             ->setCouponAmount($couponAmount)
-            ->setSentAt($date->gmtDate())
+            ->setSentAt($date)
             ->save();
     }
     public function isSubscribed($email, $list, $storeId)
@@ -167,17 +167,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $storeId
      * @return bool
      */
-    private function _checkSubscription($email, $list, $storeId){
-        $collection = $this->_unsubscribe->getCollection();
-        $collection->addFieldToFilter('main_table.email', array('eq' => $email))
-            ->addFieldToFilter('main_table.list', array('eq' => $list))
-            ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
-        if ($collection->getSize() == 0) {
-            $this->_subscribed[$storeId][$list][$email] = 'true';
-            return true;
-        } else {
-            $this->_subscribed[$storeId][$list][$email] = 'false';
-            return false;
-        }
-    }
+//    private function _checkSubscription($email, $list, $storeId){
+//        $collection = $this->_unsubscribe->getCollection();
+//        $collection->addFieldToFilter('main_table.email', array('eq' => $email))
+//            ->addFieldToFilter('main_table.list', array('eq' => $list))
+//            ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
+//        if ($collection->getSize() == 0) {
+//            $this->_subscribed[$storeId][$list][$email] = 'true';
+//            return true;
+//        } else {
+//            $this->_subscribed[$storeId][$list][$email] = 'false';
+//            return false;
+//        }
+//    }
 }
