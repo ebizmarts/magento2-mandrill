@@ -153,11 +153,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isSubscribed($email, $list, $storeId)
     {
         $subscribed = $this->_subscribed;
-        $isSubscribed = $subscribed[$storeId][$list][$email];
-        if(!isset($isSubscribed)) {
+        if(!isset($subscribed[$storeId][$list][$email])) {
             return $this->_checkSubscription($email, $list, $storeId);
         }else{
-            return $isSubscribed;
+            return $subscribed[$storeId][$list][$email];
         }
     }
 
@@ -167,17 +166,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $storeId
      * @return bool
      */
-//    private function _checkSubscription($email, $list, $storeId){
-//        $collection = $this->_unsubscribe->getCollection();
-//        $collection->addFieldToFilter('main_table.email', array('eq' => $email))
-//            ->addFieldToFilter('main_table.list', array('eq' => $list))
-//            ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
-//        if ($collection->getSize() == 0) {
-//            $this->_subscribed[$storeId][$list][$email] = 'true';
-//            return true;
-//        } else {
-//            $this->_subscribed[$storeId][$list][$email] = 'false';
-//            return false;
-//        }
-//    }
+    private function _checkSubscription($email, $list, $storeId){
+        $collection = $this->_unsubscribe->getCollection();
+        $collection->addFieldToFilter('main_table.email', array('eq' => $email))
+            ->addFieldToFilter('main_table.list', array('eq' => $list))
+            ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
+        if ($collection->getSize() == 0) {
+            $this->_subscribed[$storeId][$list][$email] = 'true';
+            return true;
+        } else {
+            $this->_subscribed[$storeId][$list][$email] = 'false';
+            return false;
+        }
+    }
 }
