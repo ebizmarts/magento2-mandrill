@@ -196,7 +196,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     {
         $email = $this->_filterEmail($email);
         $name  = $this->_filterName($name);
-        $this->_headers[] = array('Reply-To'=>sprintf('%s <%s>',$name,$email));
+        $this->_headers['Reply-To'] = sprintf('%s <%s>', $name, $email);
         return $this;
     }
 
