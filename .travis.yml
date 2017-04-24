@@ -14,7 +14,7 @@ before_script:
   - sleep 60
 
 script:
-  - cd ..
+  - cd .. ..
   - wget https://github.com/magento/magento2/archive/2.1.6.zip
   - unzip -qq 2.1.6.zip
   - cd magento2-2.1.6/
