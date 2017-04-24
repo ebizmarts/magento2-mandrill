@@ -14,8 +14,8 @@ before_script:
 
 script:
   - wget https://github.com/magento/magento2/archive/2.1.6.zip
-  - unzip -qq 2.0.6.zip
-  - cd magento2-2.0.6/
+  - unzip -qq 2.1.6.zip
+  - cd magento2-2.1.6/
   - wget https://gist.githubusercontent.com/centerax/5e42abec89d62a1308ba/raw/4b3242361c0690e234266afb3520c2940ac1055a/auth.json
   - composer require --prefer-source --no-interaction ebizmarts/magento2-mandrill:dev-develop
   - sh -c "if [ '$TEST_SUITE' = 'unit' ]; then /bin/cp ../phpunit_config.xml dev/tests/unit/ && ./vendor/bin/phpunit -c dev/tests/unit/phpunit_config.xml --coverage-text; fi"
