@@ -227,7 +227,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
         }
 
         try {
-            $result = $this->_transport->sendMessage();
+            $this->_transport->sendMessage();
         } catch (\Exception $e) {
             return false;
         }
