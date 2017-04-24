@@ -48,6 +48,12 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     }
     public function sendMessage()
     {
+        $mandrillApiInstance = $this->getMandrillApiInstance();
+
+        if ($mandrillApiInstance === null) {
+            return false;
+        }
+
         $message    = array(
             'subject' => $this->_message->getSubject(),
             'from_name' => $this->_message->getFromName(),
@@ -78,7 +84,17 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 $message['text'] = $this->_message->getBody();
                 break;
         }
-        $this->_api->getApi()->messages->send($message);
+
+        $mandrillApiInstance->messages->send($message);
+
         return true;
+    }
+
+    /**
+     * @return \Mandrill
+     */
+    private function getMandrillApiInstance()
+    {
+        return $this->_api->getApi();
     }
 }
