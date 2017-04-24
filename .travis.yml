@@ -10,8 +10,8 @@ env:
   #- TEST_SUITE=ecgcodingstandard
   #- TEST_SUITE=marketplaceeqp
 
-#before_script:
-#  - sleep 60
+before_script:
+  - sleep 60
 
 script:
   - cd ..
