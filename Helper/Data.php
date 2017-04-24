@@ -66,8 +66,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\SalesRule\Model\RuleRepository $ruleRepository,
         \Ebizmarts\Mandrill\Model\Mailsent $mailsent,
         \Ebizmarts\Mandrill\Model\Unsubscribe $unsubscribe
-    )
-    {
+    ) {
+    
         $this->_logger = $context->getLogger();
         $this->_coupon = $coupon;
         $this->_ruleRepository = $ruleRepository;
@@ -117,7 +117,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $couponCode
      * @param $storeId
      */
-    public function saveMail($mailType,$mail,$name,$couponCode,$storeId)
+    public function saveMail($mailType, $mail, $name, $couponCode, $storeId)
     {
         if ($couponCode != '') {
             $coupon = $this->_coupon->loadByCode($couponCode);
@@ -153,9 +153,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isSubscribed($email, $list, $storeId)
     {
         $subscribed = $this->_subscribed;
-        if(!isset($subscribed[$storeId][$list][$email])) {
+        if (!isset($subscribed[$storeId][$list][$email])) {
             return $this->_checkSubscription($email, $list, $storeId);
-        }else{
+        } else {
             return $subscribed[$storeId][$list][$email];
         }
     }
@@ -166,7 +166,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $storeId
      * @return bool
      */
-    private function _checkSubscription($email, $list, $storeId){
+    private function _checkSubscription($email, $list, $storeId)
+    {
         $collection = $this->_unsubscribe->getCollection();
         $collection->addFieldToFilter('main_table.email', array('eq' => $email))
             ->addFieldToFilter('main_table.list', array('eq' => $list))

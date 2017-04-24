@@ -11,6 +11,7 @@
  * @file: TransportTest.php
  */
 namespace Ebizmarts\Mandrill\Test\Unit\Model;
+
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use \Ebizmarts\Mandrill\Model\Transport;
 
@@ -47,7 +48,7 @@ class TransportTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $messagesMock->expects($this->any())->method('send')->willReturn(true);
         $mandrillMock->messages = $messagesMock;
-        $this->_transport = $objectManager->getObject('Ebizmarts\Mandrill\Model\Transport',['message'=> $this->_message, 'helper'=>$helperMock, 'api'=>$apiMock]);
+        $this->_transport = $objectManager->getObject('Ebizmarts\Mandrill\Model\Transport', ['message'=> $this->_message, 'helper'=>$helperMock, 'api'=>$apiMock]);
     }
 
     /**
@@ -59,8 +60,8 @@ class TransportTest extends \PHPUnit_Framework_TestCase
         $this->_message->addBcc('gonzalo2@ebizmarts.com');
         $this->_message->setReplyTo("gonzalo");
         $this->_message->createAttachment("test att");
-        $this->assertEquals(true,$this->_transport->sendMessage());
+        $this->assertEquals(true, $this->_transport->sendMessage());
         $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
-        $this->assertEquals(true,$this->_transport->sendMessage());
+        $this->assertEquals(true, $this->_transport->sendMessage());
     }
 }

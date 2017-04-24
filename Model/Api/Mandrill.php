@@ -24,16 +24,15 @@ class Mandrill
      */
     public function __construct(
         \Ebizmarts\Mandrill\Helper\Data $helper
-    )
-    {
+    ) {
+    
         $apiKey     = $helper->getApiKey();
-        if($apiKey!='') {
-            $this->_api = New \Mandrill($apiKey);
+        if ($apiKey!='') {
+            $this->_api = new \Mandrill($apiKey);
         }
     }
     public function getApi()
     {
         return $this->_api;
     }
-
 }

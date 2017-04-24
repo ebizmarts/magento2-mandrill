@@ -28,13 +28,11 @@ class MandrillTemplates implements \Magento\Framework\Option\ArrayInterface
     {
         $this->_helper  = $helper;
         $apiKey = $helper->getApiKey();
-        if($apiKey) {
+        if ($apiKey) {
             try {
                 $this->_api     = new \Mandrill($apiKey);
                 $this->_templates = $this->_api->templates->getList();
-            }
-            catch(Mandrill_Error $e)
-            {
+            } catch (Mandrill_Error $e) {
                 $this->_options = 'Invalid APIKEY';
             }
         }

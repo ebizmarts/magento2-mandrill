@@ -22,5 +22,4 @@ class Mailsent extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init('mandrill_mailsent', 'id');
     }
-
 }

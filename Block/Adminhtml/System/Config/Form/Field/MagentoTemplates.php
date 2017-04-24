@@ -36,8 +36,8 @@ class MagentoTemplates extends \Magento\Framework\View\Element\Html\Select
         \Magento\Framework\View\Element\Context $context,
         \Magento\Email\Model\Template\Config $emailConfig,
         array $data = []
-    )
-    {
+    ) {
+    
         parent::__construct($context, $data);
         $this->_magentoTemplatesSource = $emailConfig;
         $this->_logger = $context->getLogger();
@@ -53,11 +53,9 @@ class MagentoTemplates extends \Magento\Framework\View\Element\Html\Select
     }
     protected function _getTemplates()
     {
-        if(!$this->_magentoTemplates)
-        {
+        if (!$this->_magentoTemplates) {
             $this->_magentoTemplates = $this->_magentoTemplatesSource->getAvailableTemplates();
         }
         return $this->_magentoTemplates;
     }
-
 }

@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\Mandrill\Model\ResourceModel\Mailsent;
 
-class Collection  extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * Define resource model
@@ -22,5 +22,4 @@ class Collection  extends \Magento\Framework\Model\ResourceModel\Db\Collection\A
     {
         $this->_init('Ebizmarts\Mandrill\Model\Mailsent', 'Ebizmarts\Mandrill\Model\ResourceModel\Mailsent');
     }
-
 }

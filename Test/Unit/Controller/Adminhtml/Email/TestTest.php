@@ -11,6 +11,7 @@
  * @file: TestTest.php
  */
 namespace Ebizmarts\Mandrill\Test\Unit\Controller\Adminhtml\Email;
+
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 class TestTest extends \PHPUnit_Framework_TestCase
@@ -65,7 +66,7 @@ class TestTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $transportB->expects($this->once())->method('getTransport')->willReturn($transport);
 
-        $this->test = $objectManager->getObject('Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test',['context'=>$context,'transportBuilder'=>$transportB,'helper'=>$helper]);
+        $this->test = $objectManager->getObject('Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test', ['context'=>$context,'transportBuilder'=>$transportB,'helper'=>$helper]);
     }
 
     /**

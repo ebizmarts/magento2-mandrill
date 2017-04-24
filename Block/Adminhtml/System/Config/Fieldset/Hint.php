@@ -37,8 +37,8 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
         \Magento\Framework\App\ProductMetadataInterface $productMetaData,
         \Magento\Framework\Module\ModuleList\Loader $loader,
         array $data = []
-    )
-    {
+    ) {
+    
         parent::__construct($context, $data);
         $this->_metaData = $productMetaData;
         $this->_loader = $loader;
@@ -65,8 +65,7 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
         $v = $this->getVersion();
         $extension = "Mandrill;{$v}";
         $mageEdition = $this->_metaData->getEdition();
-        switch($mageEdition)
-        {
+        switch ($mageEdition) {
             case 'Community':
                 $mageEdition = 'CE';
                 break;
@@ -78,17 +77,14 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
         $mage = "Magento {$mageEdition};{$mageVersion}";
         $hash = md5($extension . '_' . $mage . '_' . $extension);
         return "ext=$extension&mage={$mage}&ctrl={$hash}";
-
     }
     public function getVersion()
     {
         $modules = $this->_loader->load();
         $v = "";
-        if(isset($modules['Ebizmarts_Mandrill']))
-        {
+        if (isset($modules['Ebizmarts_Mandrill'])) {
             $v =$modules['Ebizmarts_Mandrill']['setup_version'];
         }
         return $v;
     }
-
 }

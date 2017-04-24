@@ -22,5 +22,4 @@ class Unsubscribe extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init('mandrill_unsubscribe', 'id');
     }
-
 }
