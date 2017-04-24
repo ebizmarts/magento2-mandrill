@@ -17,6 +17,11 @@ use \Ebizmarts\Mandrill\Model\Transport;
 
 class TransportTest extends \PHPUnit_Framework_TestCase
 {
+    private $mandrillApiMock;
+    private $objectManager;
+    private $messagesMock;
+    private $helperMock;
+    private $apiMock;
     /**
      * @var \Ebizmarts\Mandrill\Model\Transport
      */
@@ -28,34 +33,36 @@ class TransportTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $objectManager = new ObjectManager($this);
-        $this->_message = $objectManager->getObject('Ebizmarts\Mandrill\Model\Message');
-        $helperMock = $this->getMockBuilder('Ebizmarts\Mandrill\Helper\Data')
+        $this->objectManager = new ObjectManager($this);
+
+        $this->mandrillApiMock = $this->getMockBuilder('Mandrill')->disableOriginalConstructor()->getMock();
+
+        $this->_message = $this->objectManager->getObject('Ebizmarts\Mandrill\Model\Message');
+        $this->helperMock = $this->getMockBuilder('Ebizmarts\Mandrill\Helper\Data')->disableOriginalConstructor()->getMock();
+        $this->helperMock->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
+        $this->apiMock = $this->getMockBuilder('Ebizmarts\Mandrill\Model\Api\Mandrill')
             ->disableOriginalConstructor()
             ->getMock();
-        $helperMock->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
-        $apiMock = $this->getMockBuilder('Ebizmarts\Mandrill\Model\Api\Mandrill')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mandrillMock = $this->getMockBuilder('Mandrill')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $apiMock->expects($this->any())->method('getApi')->willReturn($mandrillMock);
-        $messagesMock = $this->getMockBuilder('Mandrill\Messages')
-            ->disableOriginalConstructor()
-            ->disableAutoload()
-            ->setMethods(array('send'))
-            ->getMock();
-        $messagesMock->expects($this->any())->method('send')->willReturn(true);
-        $mandrillMock->messages = $messagesMock;
-        $this->_transport = $objectManager->getObject('Ebizmarts\Mandrill\Model\Transport', ['message'=> $this->_message, 'helper'=>$helperMock, 'api'=>$apiMock]);
+
+        $this->messagesMock = $this->getMockBuilder('Mandrill\Messages')->disableOriginalConstructor()->disableAutoload()->setMethods(array('send'))->getMock();
+        $this->messagesMock->expects($this->any())->method('send')->willReturn(true);
     }
 
     /**
-     * @covers Ebizmarts\Mandrill\Model\Transport::sendMessage
+     * @covers \Ebizmarts\Mandrill\Model\Transport::sendMessage
      */
     public function testSendMessage()
     {
+        $this->apiMock->expects($this->any())->method('getApi')->willReturn($this->mandrillApiMock);
+
+        $this->mandrillApiMock->messages = $this->messagesMock;
+        $this->_transport                = $this->objectManager
+            ->getObject('Ebizmarts\Mandrill\Model\Transport', [
+                'message'=> $this->_message,
+                'helper'=> $this->helperMock,
+                'api'=>$this->apiMock
+                ]);
+
         $this->_message->addTo('gonzalo@ebizmarts.com');
         $this->_message->addBcc('gonzalo2@ebizmarts.com');
         $this->_message->setReplyTo("gonzalo");
@@ -63,5 +70,23 @@ class TransportTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, $this->_transport->sendMessage());
         $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
         $this->assertEquals(true, $this->_transport->sendMessage());
+    }
+
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Transport::sendMessage
+     */
+    public function testSendMessageDisabled()
+    {
+        $this->mandrillApiMock = null;
+        $this->apiMock->expects($this->any())->method('getApi')->willReturn($this->mandrillApiMock);
+
+        $this->_transport = $this->objectManager
+            ->getObject('Ebizmarts\Mandrill\Model\Transport', [
+                'message'=> $this->_message,
+                'helper'=> $this->helperMock,
+                'api'=>$this->apiMock
+                ]);
+
+        $this->assertEquals(false, $this->_transport->sendMessage());
     }
 }
