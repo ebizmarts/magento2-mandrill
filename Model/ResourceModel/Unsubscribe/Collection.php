@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\Mandrill\Model\ResourceModel\Unsubscribe;
 
-class Collection   extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * Define resource model
@@ -22,5 +22,4 @@ class Collection   extends \Magento\Framework\Model\ResourceModel\Db\Collection\
     {
         $this->_init('Ebizmarts\Mandrill\Model\Unsubscribe', 'Ebizmarts\Mandrill\Model\ResourceModel\Unsubscribe');
     }
-
 }

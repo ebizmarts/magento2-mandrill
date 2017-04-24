@@ -38,10 +38,10 @@ class Templatemap extends \Magento\Config\Block\System\Config\Form\Field\FieldAr
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Data\Form\Element\Factory $elementFactory,
         array $data = []
-    )
-    {
+    ) {
+    
         $this->_elementFactory  = $elementFactory;
-        parent::__construct($context,$data);
+        parent::__construct($context, $data);
     }
     protected function _construct()
     {
@@ -65,8 +65,7 @@ class Templatemap extends \Magento\Config\Block\System\Config\Form\Field\FieldAr
     }
     protected function getMagentoTemplateRenderer()
     {
-        if(!$this->_magentoTemplates)
-        {
+        if (!$this->_magentoTemplates) {
             $this->_magentoTemplates = $this->getLayout()->createBlock(
                 '\Ebizmarts\Mandrill\Block\Adminhtml\System\Config\Form\Field\MagentoTemplates',
                 '',
@@ -77,8 +76,7 @@ class Templatemap extends \Magento\Config\Block\System\Config\Form\Field\FieldAr
     }
     protected function getMandrillTemplateRenderer()
     {
-        if(!$this->_mandrillTemplates)
-        {
+        if (!$this->_mandrillTemplates) {
             $this->_mandrillTemplates = $this->getLayout()->createBlock(
                 '\Ebizmarts\Mandrill\Block\Adminhtml\System\Config\Form\Field\MandrillTemplates',
                 '',

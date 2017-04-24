@@ -11,7 +11,7 @@
  * @file: registration.php
  */
 \Magento\Framework\Component\ComponentRegistrar::register(
-        \Magento\Framework\Component\ComponentRegistrar::MODULE,
-        'Ebizmarts_Mandrill',
-        __DIR__
-    );
+    \Magento\Framework\Component\ComponentRegistrar::MODULE,
+    'Ebizmarts_Mandrill',
+    __DIR__
+);

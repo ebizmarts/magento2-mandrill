@@ -36,9 +36,9 @@ class Message implements \Magento\Framework\Mail\MessageInterface
         \Psr\Log\LoggerInterface $logger,
         \Ebizmarts\Mandrill\Helper\Data $helper,
         \Ebizmarts\Mandrill\Model\Api\Mandrill $api
-    )
-    {
-        $this->_transport = new Transport($this,$logger,$helper,$api);
+    ) {
+    
+        $this->_transport = new Transport($this, $logger, $helper, $api);
     }
     public function setSubject($subject)
     {
@@ -58,7 +58,7 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     {
         return $this->_messageType == self::TYPE_TEXT ? $this->_bodyText : $this->_bodyHtml;
     }
-    public function setFrom($fromAddress,$name = null)
+    public function setFrom($fromAddress, $name = null)
     {
         $this->_from        = $fromAddress;
         $this->_fromName    = $name;
@@ -84,45 +84,36 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     {
         return $this->_bcc;
     }
-    public function addTo($toAddress,$name = null)
+    public function addTo($toAddress, $name = null)
     {
-        if(is_array($toAddress))
-        {
-            foreach($toAddress as $address)
-            {
-                array_push($this->_to,$address);
+        if (is_array($toAddress)) {
+            foreach ($toAddress as $address) {
+                array_push($this->_to, $address);
             }
-        }
-        else {
-            array_push($this->_to,$toAddress);
+        } else {
+            array_push($this->_to, $toAddress);
         }
         return $this;
     }
-    public function addCc($ccAddress,$name = null)
+    public function addCc($ccAddress, $name = null)
     {
-        if(is_array($ccAddress))
-        {
-            foreach($ccAddress as $address)
-            {
-                array_push($this->_to,$address);
+        if (is_array($ccAddress)) {
+            foreach ($ccAddress as $address) {
+                array_push($this->_to, $address);
             }
-        }
-        else {
-            array_push($this->_to,$ccAddress);
+        } else {
+            array_push($this->_to, $ccAddress);
         }
         return $this;
     }
-    public function addBcc($bccAddress,$name = null)
+    public function addBcc($bccAddress, $name = null)
     {
-        if(is_array($bccAddress))
-        {
-            foreach($bccAddress as $address)
-            {
-                array_push($this->_bcc,$address);
+        if (is_array($bccAddress)) {
+            foreach ($bccAddress as $address) {
+                array_push($this->_bcc, $address);
             }
-        }
-        else {
-            array_push($this->_bcc,$bccAddress);
+        } else {
+            array_push($this->_bcc, $bccAddress);
         }
         return $this;
     }
@@ -135,14 +126,16 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     {
         return $this->_messageType;
     }
-    public function createAttachment($body,
-                                     $mimeType    = \Zend_Mime::TYPE_OCTETSTREAM,
-                                     $disposition = \Zend_Mime::DISPOSITION_ATTACHMENT,
-                                     $encoding    = \Zend_Mime::ENCODING_BASE64,
-                                     $filename    = null)
-    {
+    public function createAttachment(
+        $body,
+        $mimeType = \Zend_Mime::TYPE_OCTETSTREAM,
+        $disposition = \Zend_Mime::DISPOSITION_ATTACHMENT,
+        $encoding = \Zend_Mime::ENCODING_BASE64,
+        $filename = null
+    ) {
+    
         $att = array('type' => $mimeType,'name' => $filename,'content'=> base64_encode($body));
-        array_push($this->_att,$att);
+        array_push($this->_att, $att);
         return $this;
     }
     public function getAttachments()
@@ -204,42 +197,40 @@ class Message implements \Magento\Framework\Mail\MessageInterface
     {
 
         $email = array();
-        foreach($this->_to as $to) {
+        foreach ($this->_to as $to) {
             $email['to'][] = array(
                 'email' => $to
             );
         }
-        foreach($this->_bcc as $bcc) {
+        foreach ($this->_bcc as $bcc) {
             $email['to'][] = array(
                 'email' => $bcc,
                 'type' => 'bcc'
             );
         }
         $email['subject'] = $this->_subject;
-        if(isset($this->_fromName)) {
+        if (isset($this->_fromName)) {
             $email['from_name'] = $this->_fromName;
         }
         $email['from_email'] = $this->_from;
-        if($headers = $this->getHeaders()) {
+        if ($headers = $this->getHeaders()) {
             $email['headers'] = $headers;
         }
-        if($att = $this->getAttachments()) {
+        if ($att = $this->getAttachments()) {
             $email['attachments'] = $att;
         }
-        if($this->_bodyHtml) {
+        if ($this->_bodyHtml) {
             $email['html'] = $this->_bodyHtml;
         }
-        if($this->_bodyText) {
+        if ($this->_bodyText) {
             $email['text'] = $this->_bodyText;
         }
 
         try {
             $result = $this->_transport->sendMessage();
-        }
-        catch(\Exception $e ) {
+        } catch (\Exception $e) {
             return false;
         }
         return true;
     }
-
 }

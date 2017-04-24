@@ -41,27 +41,24 @@ class Config
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Module\ModuleList\Loader $loader,
         \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
-    )
-    {
+    ) {
+    
         $this->_objectManager = $objectManager;
         $this->_logger = $logger;
         $this->_loader = $loader;
         $this->_writer = $configWriter;
     }
-    public function aroundSave(\Magento\Config\Model\Config $config,\Closure $proceed)
+    public function aroundSave(\Magento\Config\Model\Config $config, \Closure $proceed)
     {
         $ret = $proceed();
         $sectionId = $config->getSection();
-        if($sectionId=='mandrill'&&!$config->getConfigDataValue('mandrill/general/active'))
-        {
+        if ($sectionId=='mandrill'&&!$config->getConfigDataValue('mandrill/general/active')) {
             $modules = $this->_loader->load();
-            if(isset($modules['Ebizmarts_AbandonedCart']))
-            {
-                $this->_writer->save(\Ebizmarts\AbandonedCart\Model\Config::ACTIVE,0,$config->getScope(),$config->getScopeId());
+            if (isset($modules['Ebizmarts_AbandonedCart'])) {
+                $this->_writer->save(\Ebizmarts\AbandonedCart\Model\Config::ACTIVE, 0, $config->getScope(), $config->getScopeId());
             }
-            if(isset($modules['Ebizmarts_AutoResponder']))
-            {
-                $this->_writer->save(\Ebizmarts\AutoResponder\Model\Config::ACTIVE,0,$config->getScope(),$config->getScopeId());
+            if (isset($modules['Ebizmarts_AutoResponder'])) {
+                $this->_writer->save(\Ebizmarts\AutoResponder\Model\Config::ACTIVE, 0, $config->getScope(), $config->getScopeId());
             }
         }
         return $ret;

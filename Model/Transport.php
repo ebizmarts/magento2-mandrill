@@ -39,8 +39,8 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         \Psr\Log\LoggerInterface $logger,
         \Ebizmarts\Mandrill\Helper\Data $helper,
         \Ebizmarts\Mandrill\Model\Api\Mandrill $api
-    )
-    {
+    ) {
+    
         $this->_message = $message;
         $this->_logger  = $logger;
         $this->_helper  = $helper;
@@ -53,27 +53,24 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             'from_name' => $this->_message->getFromName(),
             'from_email'=> $this->_message->getFrom(),
         );
-        foreach($this->_message->getTo() as $to)
-        {
+        foreach ($this->_message->getTo() as $to) {
             $message['to'][] = array(
                 'email' => $to
             );
         }
-        foreach($this->_message->getBcc() as $bcc)
-        {
+        foreach ($this->_message->getBcc() as $bcc) {
             $message['to'][] = array(
                 'email' => $bcc,
                 'type' => 'bcc'
             );
         }
-        if($att = $this->_message->getAttachments()) {
+        if ($att = $this->_message->getAttachments()) {
             $message['attachments'] = $att;
         }
-        if($headers = $this->_message->getHeaders()) {
+        if ($headers = $this->_message->getHeaders()) {
             $message['headers'] = $headers;
         }
-        switch($this->_message->getType())
-        {
+        switch ($this->_message->getType()) {
             case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
                 $message['html'] = $this->_message->getBody();
                 break;
