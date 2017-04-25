@@ -52,8 +52,7 @@ class Test extends \Magento\Backend\App\Action
         $this->_transportBuilder->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => 1]);
         $transport = $this->_transportBuilder->getTransport();
         $transport->sendMessage();
-//        $response   = new Object();
-//        $response->setError(0);
+
         /** @var \Magento\Framework\Controller\Result\Json $resultJson */
         $resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         $resultJson->setData(['error'=>0]);
