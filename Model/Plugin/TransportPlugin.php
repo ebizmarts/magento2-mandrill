@@ -2,7 +2,6 @@
 
 namespace Ebizmarts\Mandrill\Model\Plugin;
 
-
 class TransportPlugin
 {
     private $mandrillTransportFactory;
@@ -12,8 +11,7 @@ class TransportPlugin
     public function __construct(
         \Ebizmarts\Mandrill\Helper\Data $mandrillHelper,
         \Ebizmarts\Mandrill\Model\TransportFactory $mandrillTransportFactory
-    )
-    {
+    ) {
         $this->mandrillHelper = $mandrillHelper;
         $this->mandrillTransportFactory = $mandrillTransportFactory;
     }
@@ -27,6 +25,8 @@ class TransportPlugin
             $mandrillTransport = $this->mandrillTransportFactory->create();
             $mandrillTransport->sendMessage();
         }
+
+        return null;
     }
 
     /**
@@ -34,7 +34,6 @@ class TransportPlugin
      */
     private function isMandrillEnabled()
     {
-        return (1 === (int)$this->mandrillHelper->isActive());
+        return $this->mandrillHelper->isMandrillEnabled();
     }
-
 }
