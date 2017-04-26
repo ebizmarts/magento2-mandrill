@@ -17,6 +17,8 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHe
 
 class MessageTest extends \PHPUnit_Framework_TestCase
 {
+    private $helperMock;
+    private $apiMock;
     /**
      * @var \Ebizmarts\Mandrill\Model\Message
      */
@@ -24,11 +26,12 @@ class MessageTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $helper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
         $helperMock = $this->getMockBuilder('Ebizmarts\Mandrill\Helper\Data')
             ->disableOriginalConstructor()
             ->getMock();
+
         $helperMock->expects($this->any())->method('getApiKey')->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
+
         $apiMock = $this->getMockBuilder('Ebizmarts\Mandrill\Model\Api\Mandrill')
             ->disableOriginalConstructor()
             ->getMock();
@@ -44,7 +47,10 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $messagesMock->expects($this->any())->method('send')->willReturn(true);
         $mandrillMock->messages = $messagesMock;
 
-        $this->_message = $helper->getObject('Ebizmarts\Mandrill\Model\Message', ['helper'=>$helperMock,'api'=>$apiMock]);
+        $this->helperMock = $helperMock;
+        $this->apiMock    = $apiMock;
+
+        $this->getMandrillMessageObject();
     }
 
     /**
@@ -53,8 +59,19 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetSubject()
     {
+        $this->enableMandrill();
         $this->_message->setSubject('subject');
         $this->assertEquals('subject', $this->_message->getSubject());
+    }
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::setSubject
+     * @covers \Ebizmarts\Mandrill\Model\Message::getSubject
+     */
+    public function testSetSubjectMandrillNotEnabled()
+    {
+        $this->disableMandrill();
+        $this->_message->setSubject('subject');
+        \PHPUnit_Framework_Assert::assertAttributeEquals(null, "subject", $this->_message);
     }
     /**
      * @covers \Ebizmarts\Mandrill\Model\Message::setBody
@@ -62,24 +79,50 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetBody()
     {
+        $this->enableMandrill();
         $this->_message->setBody('body');
         $this->assertEquals('body', $this->_message->getBody());
     }
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::setBody
+     * @covers \Ebizmarts\Mandrill\Model\Message::getBody
+     */
+    public function testSetBodyMandrillNotEnabled()
+    {
+        $this->disableMandrill();
+        $this->_message->setBody('body');
+        $this->assertInstanceOf('Zend_Mime_Part', $this->_message->getBody());
+    }
+
     /**
      * @covers \Ebizmarts\Mandrill\Model\Message::setFrom
      * @covers \Ebizmarts\Mandrill\Model\Message::getFrom
      */
     public function testSetFrom()
     {
+        $this->enableMandrill();
         $this->_message->setFrom('from');
         $this->assertEquals('from', $this->_message->getFrom());
     }
+
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::setFrom
+     * @covers \Ebizmarts\Mandrill\Model\Message::getFrom
+     */
+    public function testSetFromMandrillNotEnabled()
+    {
+        $this->disableMandrill();
+        $this->_message->setFrom('from');
+        $this->assertEquals('from', $this->_message->getFrom());
+    }
+
     /**
      * @covers \Ebizmarts\Mandrill\Model\Message::addTo
      * @covers \Ebizmarts\Mandrill\Model\Message::getTo
      */
     public function testAddTo()
     {
+        $this->enableMandrill();
         $this->_message->addTo('to');
         $this->assertEquals(array('to'), $this->_message->getTo());
         $this->_message->addTo(array('to1','to2'));
@@ -87,10 +130,25 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::addTo
+     * @covers \Ebizmarts\Mandrill\Model\Message::getTo
+     */
+    public function testAddToMandrillDisabled()
+    {
+        $this->disableMandrill();
+        $this->_message->addTo('to');
+        \PHPUnit_Framework_Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
+
+        $this->_message->addTo(array('to1','to2'));
+        \PHPUnit_Framework_Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
+    }
+
+    /**
      * @covers \Ebizmarts\Mandrill\Model\Message::addCc
      */
     public function testAddCc()
     {
+        $this->enableMandrill();
         $this->_message->addCc('cc');
         $this->assertEquals(array('cc'), $this->_message->getTo());
         $this->_message->addCc(array('cc1','cc2'));
@@ -103,6 +161,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddBcc()
     {
+        $this->enableMandrill();
         $this->_message->addBcc('bcc');
         $this->assertEquals(array('bcc'), $this->_message->getBcc());
         $this->_message->addBcc(array('bcc1','bcc2'));
@@ -116,6 +175,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetMessageType()
     {
+        $this->enableMandrill();
         $this->_message->setMessageType('mt');
         $this->assertEquals('mt', $this->_message->getMessageType());
         $this->assertEquals('mt', $this->_message->getType());
@@ -127,6 +187,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateAttachment()
     {
+        $this->enableMandrill();
         $this->_message->createAttachment('body', \Zend_Mime::TYPE_OCTETSTREAM, \Zend_Mime::DISPOSITION_ATTACHMENT, \Zend_Mime::ENCODING_BASE64, 'filename');
         $att = $this->_message->getAttachments();
         $this->assertEquals('filename', $att[0]['name']);
@@ -138,6 +199,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddHeader()
     {
+        $this->enableMandrill();
         $this->_message->addHeader('header', 'value');
         $h = $this->_message->getHeaders();
         $this->assertEquals('value', $h['header']);
@@ -150,6 +212,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddHeaderWithException()
     {
+        $this->enableMandrill();
         $this->_message->addHeader('to', 'value');
     }
 
@@ -159,6 +222,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetReplyTo()
     {
+        $this->enableMandrill();
         $this->_message->setReplyTo("info@ebizmarts.com", "ebizmarts");
         $h = $this->_message->getHeaders();
         $this->assertEquals('ebizmarts <info@ebizmarts.com>', $h['Reply-To']);
@@ -168,17 +232,22 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('[ebizmarts] <info@ebizmarts.com>', $h['Reply-To']);
     }
 
-    public function testSend()
+    private function getMandrillMessageObject()
     {
-        $this->_message->setFrom('gonzalo@ebizmarts.com', 'gonzalo');
-        $this->_message->addTo('gonzalo@ebizmarts.com');
-        $this->_message->addBcc('gonzalo2@ebizmarts.com');
-        $this->_message->setReplyTo("gonzalo");
-        $this->_message->createAttachment("test att");
-        $this->_message->setBody('body');
-        $this->_message->send();
-        $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
-        $this->_message->setBody('body');
-        $this->_message->send();
+        $objectManagerHelper = $helper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $this->_message = $objectManagerHelper->getObject(
+            'Ebizmarts\Mandrill\Model\Message',
+            ['helper' => $this->helperMock, 'api' => $this->apiMock]
+        );
+    }
+
+    private function disableMandrill()
+    {
+        $this->helperMock->method('isMandrillEnabled')->willReturn(false);
+    }
+
+    private function enableMandrill()
+    {
+        $this->helperMock->method('isMandrillEnabled')->willReturn(true);
     }
 }

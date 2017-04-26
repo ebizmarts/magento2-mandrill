@@ -92,6 +92,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @param string|int $store
+     * @return bool
+     */
+    public function isMandrillEnabled($store = null)
+    {
+        return (1 === (int)$this->isActive($store));
+    }
+
+    /**
      * @codeCoverageIgnore
      */
     public function log($msg)

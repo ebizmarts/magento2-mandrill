@@ -35,7 +35,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      * @param \Ebizmarts\Mandrill\Helper\Data $helper
      */
     public function __construct(
-        \Magento\Framework\Mail\MessageInterface $message,
+        \Ebizmarts\Mandrill\Model\Message $message,
         \Psr\Log\LoggerInterface $logger,
         \Ebizmarts\Mandrill\Helper\Data $helper,
         \Ebizmarts\Mandrill\Model\Api\Mandrill $api
