@@ -16,7 +16,8 @@ class SendTestEmail extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * @codeCoverageIgnore
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) {
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
         $originalData = $element->getOriginalData();
 
         $label = $originalData['button_label'];

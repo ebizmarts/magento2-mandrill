@@ -66,8 +66,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\SalesRule\Model\RuleRepository $ruleRepository,
         \Ebizmarts\Mandrill\Model\Mailsent $mailsent,
         \Ebizmarts\Mandrill\Model\Unsubscribe $unsubscribe
-    )
-    {
+    ) {
+    
         $this->_logger = $context->getLogger();
         $this->_coupon = $coupon;
         $this->_ruleRepository = $ruleRepository;
@@ -89,6 +89,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isActive($store = null)
     {
         return $this->scopeConfig->getValue(self::XML_PATH_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
+    }
+
+    /**
+     * @param string|int $store
+     * @return bool
+     */
+    public function isMandrillEnabled($store = null)
+    {
+        return (1 === (int)$this->isActive($store));
     }
 
     /**
@@ -117,7 +126,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $couponCode
      * @param $storeId
      */
-    public function saveMail($mailType,$mail,$name,$couponCode,$storeId)
+    public function saveMail($mailType, $mail, $name, $couponCode, $storeId)
     {
         if ($couponCode != '') {
             $coupon = $this->_coupon->loadByCode($couponCode);
@@ -153,11 +162,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isSubscribed($email, $list, $storeId)
     {
         $subscribed = $this->_subscribed;
-        $isSubscribed = $subscribed[$storeId][$list][$email];
-        if(!isset($isSubscribed)) {
+        if (!isset($subscribed[$storeId][$list][$email])) {
             return $this->_checkSubscription($email, $list, $storeId);
-        }else{
-            return $isSubscribed;
+        } else {
+            return $subscribed[$storeId][$list][$email];
         }
     }
 
@@ -167,17 +175,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $storeId
      * @return bool
      */
-//    private function _checkSubscription($email, $list, $storeId){
-//        $collection = $this->_unsubscribe->getCollection();
-//        $collection->addFieldToFilter('main_table.email', array('eq' => $email))
-//            ->addFieldToFilter('main_table.list', array('eq' => $list))
-//            ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
-//        if ($collection->getSize() == 0) {
-//            $this->_subscribed[$storeId][$list][$email] = 'true';
-//            return true;
-//        } else {
-//            $this->_subscribed[$storeId][$list][$email] = 'false';
-//            return false;
-//        }
-//    }
+    private function _checkSubscription($email, $list, $storeId)
+    {
+        $collection = $this->_unsubscribe->getCollection();
+        $collection->addFieldToFilter('main_table.email', array('eq' => $email))
+            ->addFieldToFilter('main_table.list', array('eq' => $list))
+            ->addFieldToFilter('main_table.store_id', array('eq' => $storeId));
+        if ($collection->getSize() == 0) {
+            $this->_subscribed[$storeId][$list][$email] = 'true';
+            return true;
+        } else {
+            $this->_subscribed[$storeId][$list][$email] = 'false';
+            return false;
+        }
+    }
 }

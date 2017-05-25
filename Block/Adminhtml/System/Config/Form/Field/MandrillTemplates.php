@@ -29,8 +29,8 @@ class MandrillTemplates extends \Magento\Framework\View\Element\Html\Select
         \Magento\Framework\View\Element\Context $context,
         \Ebizmarts\Mandrill\Model\Config\Source\MandrillTemplates $templateSource,
         array $data = []
-    )
-    {
+    ) {
+    
         parent::__construct($context, $data);
         $this->_mandrillTemplatesSource = $templateSource;
     }
@@ -45,11 +45,9 @@ class MandrillTemplates extends \Magento\Framework\View\Element\Html\Select
     }
     protected function _getTemplates()
     {
-        if(!$this->_mandrillTemplates)
-        {
+        if (!$this->_mandrillTemplates) {
             $this->_mandrillTemplates = $this->_mandrillTemplatesSource->toOptionArray();
         }
         return $this->_mandrillTemplates;
     }
-
 }

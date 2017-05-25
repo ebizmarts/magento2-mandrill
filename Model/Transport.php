@@ -35,12 +35,12 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      * @param \Ebizmarts\Mandrill\Helper\Data $helper
      */
     public function __construct(
-        \Magento\Framework\Mail\MessageInterface $message,
+        \Ebizmarts\Mandrill\Model\Message $message,
         \Psr\Log\LoggerInterface $logger,
         \Ebizmarts\Mandrill\Helper\Data $helper,
         \Ebizmarts\Mandrill\Model\Api\Mandrill $api
-    )
-    {
+    ) {
+    
         $this->_message = $message;
         $this->_logger  = $logger;
         $this->_helper  = $helper;
@@ -48,32 +48,35 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     }
     public function sendMessage()
     {
+        $mandrillApiInstance = $this->getMandrillApiInstance();
+
+        if ($mandrillApiInstance === null) {
+            return false;
+        }
+
         $message    = array(
             'subject' => $this->_message->getSubject(),
             'from_name' => $this->_message->getFromName(),
             'from_email'=> $this->_message->getFrom(),
         );
-        foreach($this->_message->getTo() as $to)
-        {
+        foreach ($this->_message->getTo() as $to) {
             $message['to'][] = array(
                 'email' => $to
             );
         }
-        foreach($this->_message->getBcc() as $bcc)
-        {
+        foreach ($this->_message->getBcc() as $bcc) {
             $message['to'][] = array(
                 'email' => $bcc,
                 'type' => 'bcc'
             );
         }
-        if($att = $this->_message->getAttachments()) {
+        if ($att = $this->_message->getAttachments()) {
             $message['attachments'] = $att;
         }
-        if($headers = $this->_message->getHeaders()) {
+        if ($headers = $this->_message->getHeaders()) {
             $message['headers'] = $headers;
         }
-        switch($this->_message->getType())
-        {
+        switch ($this->_message->getType()) {
             case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
                 $message['html'] = $this->_message->getBody();
                 break;
@@ -81,7 +84,17 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 $message['text'] = $this->_message->getBody();
                 break;
         }
-        $this->_api->getApi()->messages->send($message);
+
+        $mandrillApiInstance->messages->send($message);
+
         return true;
+    }
+
+    /**
+     * @return \Mandrill
+     */
+    private function getMandrillApiInstance()
+    {
+        return $this->_api->getApi();
     }
 }

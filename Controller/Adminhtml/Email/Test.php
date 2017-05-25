@@ -13,7 +13,6 @@ namespace Ebizmarts\Mandrill\Controller\Adminhtml\Email;
 use Magento\Framework\Object;
 use Magento\Framework\Controller\ResultFactory;
 
-
 class Test extends \Magento\Backend\App\Action
 {
     /**
@@ -35,8 +34,8 @@ class Test extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
         \Ebizmarts\Mandrill\Helper\Data $helper
-    )
-    {
+    ) {
+    
         parent::__construct($context);
         $this->_transportBuilder = $transportBuilder;
         $this->_helper = $helper;
@@ -53,8 +52,7 @@ class Test extends \Magento\Backend\App\Action
         $this->_transportBuilder->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => 1]);
         $transport = $this->_transportBuilder->getTransport();
         $transport->sendMessage();
-//        $response   = new Object();
-//        $response->setError(0);
+
         /** @var \Magento\Framework\Controller\Result\Json $resultJson */
         $resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         $resultJson->setData(['error'=>0]);

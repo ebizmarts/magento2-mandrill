@@ -11,6 +11,7 @@
  * @file: DataTest.php
  */
 namespace Ebizmarts\Mandrill\Test\Unit\Helper;
+
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 class DataTest extends \PHPUnit_Framework_TestCase
@@ -30,7 +31,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $contextMock->expects($this->any())
             ->method('getScopeConfig')
             ->willReturn($this->_scopeMock);
-        $this->_helper = $objectManager->getObject('Ebizmarts\Mandrill\Helper\Data',['context'=>$contextMock]);
+        $this->_helper = $objectManager->getObject('Ebizmarts\Mandrill\Helper\Data', ['context'=>$contextMock]);
     }
 
     /**
@@ -42,7 +43,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->_scopeMock->expects($this->once())
             ->method('getValue')
             ->willReturn('vt48WV1AdLz5kzNDr2JwnQ');
-        $this->assertEquals($this->_helper->getApiKey(),'vt48WV1AdLz5kzNDr2JwnQ');
+        $this->assertEquals($this->_helper->getApiKey(), 'vt48WV1AdLz5kzNDr2JwnQ');
     }
 
     /**
@@ -53,7 +54,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->_scopeMock->expects($this->once())
             ->method('getValue')
             ->willReturn('yes');
-        $this->assertEquals($this->_helper->isActive(),'yes');
+        $this->assertEquals($this->_helper->isActive(), 'yes');
     }
     /**
      * @covers Ebizmarts\Mandrill\Helper\Data::getTestSender
@@ -63,6 +64,6 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->_scopeMock->expects($this->once())
             ->method('getValue')
             ->willReturn('gonzalo');
-        $this->assertEquals($this->_helper->getTestSender(),'gonzalo');
+        $this->assertEquals($this->_helper->getTestSender(), 'gonzalo');
     }
 }
