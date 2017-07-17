@@ -45,7 +45,16 @@ class TransportTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $this->messagesMock = $this->getMockBuilder('Mandrill\Messages')->disableOriginalConstructor()->disableAutoload()->setMethods(array('send'))->getMock();
-        $this->messagesMock->expects($this->any())->method('send')->willReturn(true);
+        $this->messagesMock->expects($this->any())->method('send')->willReturn(
+            [
+                [
+                    'status' => 'accepted',
+                    'email' => 'gonzalo@ebizmarts.com',
+                    '_id' => 'da911aasd132',
+                    'reject_reason' => ''
+                ]
+            ]
+        );
     }
 
     /**
