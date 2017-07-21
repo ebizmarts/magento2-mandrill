@@ -12,8 +12,8 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="\Magento\Framework\Mail\Message" type="Ebizmarts\Mandrill\Model\Message"/>
-    <type name="Magento\Framework\Mail\Transport">
-        <plugin name="mandrill-send-message" type="Ebizmarts\Mandrill\Model\Plugin\TransportPlugin" sortOrder="1" />
+    <type name="Magento\Framework\Mail\TransportInterfaceFactory">
+        <plugin name="mandrill-send-message" type="Ebizmarts\Mandrill\Model\Plugin\TransportInterfaceFactory" sortOrder="1" />
     </type>
     <type name="Magento\Config\Model\Config">
         <plugin name="mandrill-save" type="Ebizmarts\Mandrill\Model\Plugin\Config" sortOrder="10"/>
