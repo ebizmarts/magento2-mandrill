@@ -34,6 +34,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     public function __construct(\Ebizmarts\Mandrill\Helper\Data $helper)
     {
         $this->mandrillHelper = $helper;
+        parent::__construct();
     }
 
     public function setSubject($subject)
