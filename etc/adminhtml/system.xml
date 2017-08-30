@@ -17,7 +17,7 @@
         </tab>
         <section id="mandrill" translate="label" type="text" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
-            <label>MailChimp</label>
+            <label>Mandrill</label>
             <tab>mailchimp</tab>
             <resource>Ebizmarts_Mandrill::config_mandrill</resource>
             <group id="hint" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
