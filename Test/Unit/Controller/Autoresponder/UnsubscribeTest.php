@@ -49,7 +49,7 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
         $context = $this->getMockBuilder(\Magento\Backend\App\Action\Context::class)->disableOriginalConstructor()->getMock();
 
         $context->expects($this->exactly(3))->method("getRequest")->willReturn($this->makeRequestObject());
-        $context->expects($this->any())->method("getObjectManager")->willReturn($this->makeObjectManagerMock());
+        $context->expects($this->exactly(2))->method("getObjectManager")->willReturn($this->makeObjectManagerMock());
 
         return $context;
     }
@@ -59,12 +59,54 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
         $objectManagerMock = $this->getMockBuilder(\Magento\Framework\ObjectManager\ObjectManager::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $objectManagerMock->expects($this->once())->method("create")->with("\Ebizmarts\Mandrill\Model\Unsubscribe")->willReturn($this->makeMandrillUnsubsribeMock());
+        $objectManagerMock->expects($this->exactly(2))->method("create")
+            ->withConsecutive(
+                ["\Ebizmarts\Mandrill\Model\Unsubscribe"],
+                ["\Ebizmarts\Mandrill\Model\Unsubscribe"]
+                )
+            ->willReturnOnConsecutiveCalls(
+                $this->makeMandrillUnsubsribeMockWithCollection(),
+                $this->makeMandrillUnsubsribeMock()
+            );
 
         return $objectManagerMock;
     }
 
     private function makeMandrillUnsubsribeMock()
+    {
+        $unsubscribeMock = $this->getMockBuilder(\Ebizmarts\Mandrill\Model\Unsubscribe::class)
+            ->setMethods(["setEmail", "setList", "setStoreId", "save", "setUnsubscribedAt"])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $unsubscribeMock
+            ->expects($this->once())
+            ->method("setEmail")
+            ->with("gonzalo@ebizmarts.com")
+            ->willReturnSelf();
+        $unsubscribeMock
+            ->expects($this->once())
+            ->method("setList")
+            ->with("1234")
+            ->willReturnSelf();
+        $unsubscribeMock
+            ->expects($this->once())
+            ->method("setStoreId")
+            ->with("default")
+            ->willReturnSelf();
+        $unsubscribeMock
+            ->expects($this->exactly(2))
+            ->method("setUnsubscribedAt")
+            ->withAnyParameters()
+            ->willReturnSelf();
+        $unsubscribeMock
+            ->expects($this->once())
+            ->method("save")
+            ->willReturnSelf();
+
+        return $unsubscribeMock;
+    }
+
+    private function makeMandrillUnsubsribeMockWithCollection()
     {
         $collectionMock = $this->getMockBuilder(\Ebizmarts\Mandrill\Model\Unsubscribe::class)
             ->setMethods(["getCollection"])
@@ -94,6 +136,7 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
             ->willReturnSelf();
 
         $collectionMock->expects($this->once())->method("setPageSize")->with(1);
+        $collectionMock->expects($this->once())->method("getSize")->willReturn(0);
 
         return $collectionMock;
     }
