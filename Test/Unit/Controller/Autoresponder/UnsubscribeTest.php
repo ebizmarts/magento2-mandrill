@@ -18,7 +18,8 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
         /** @var \Ebizmarts\Mandrill\Controller\Autoresponder\Unsubscribe $unsubscribeController */
         $unsubscribeController = $objectManager
             ->getObject(
-                \Ebizmarts\Mandrill\Controller\Autoresponder\Unsubscribe::class, ["context" => $this->makeContext()]
+                \Ebizmarts\Mandrill\Controller\Autoresponder\Unsubscribe::class,
+                ["context" => $this->makeContext()]
             );
 
         $unsubscribeResult = $unsubscribeController->execute();
@@ -99,7 +100,7 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
             ->withConsecutive(
                 ["\Ebizmarts\Mandrill\Model\Unsubscribe"],
                 ["\Ebizmarts\Mandrill\Model\Unsubscribe"]
-                )
+            )
             ->willReturnOnConsecutiveCalls(
                 $this->makeMandrillUnsubsribeMockWithCollection(),
                 $this->makeMandrillUnsubsribeMock()
@@ -176,5 +177,4 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
 
         return $collectionMock;
     }
-
 }
