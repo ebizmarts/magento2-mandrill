@@ -50,8 +50,20 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
 
         $context->expects($this->exactly(3))->method("getRequest")->willReturn($this->makeRequestObject());
         $context->expects($this->exactly(2))->method("getObjectManager")->willReturn($this->makeObjectManagerMock());
+        $context->expects($this->exactly(2))->method("getMessageManager")->willReturn($this->makeMessageManagerMock());
 
         return $context;
+    }
+
+    private function makeMessageManagerMock()
+    {
+        $messageManagerMock = $this->getMockBuilder(\Magento\Framework\Message\Manager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $messageManagerMock->expects($this->once())->method("addNotice")->with("You are unsubcribed from 1234");
+
+        return $messageManagerMock;
     }
 
     private function makeObjectManagerMock()
