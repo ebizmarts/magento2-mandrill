@@ -82,6 +82,10 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         return true;
     }
 
+    public function getMessage() {
+        return $this->message;
+    }
+
     private function processApiCallResult($result)
     {
         $currentResult = current($result);
