@@ -93,6 +93,8 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
             )
             ->willReturnSelf();
 
+        $collectionMock->expects($this->once())->method("setPageSize")->with(1);
+
         return $collectionMock;
     }
 
