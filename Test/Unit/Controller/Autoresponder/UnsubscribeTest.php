@@ -7,6 +7,10 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 class UnsubscribeTest extends \PHPUnit_Framework_TestCase
 {
 
+    const EMAIL = "gonzalo@ebizmarts.com";
+    const LIST = "1234";
+    const STORE = "default";
+
     public function testExecuteUnsubscribe()
     {
         $objectManager = new ObjectManager($this);
@@ -36,7 +40,7 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
                 ["list", false],
                 ["store", false]
             )
-            ->willReturnOnConsecutiveCalls("gonzalo@ebizmarts.com", "1234", "default");
+            ->willReturnOnConsecutiveCalls(self::EMAIL, self::LIST, self::STORE);
 
         return $request;
     }
@@ -61,7 +65,7 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $messageManagerMock->expects($this->once())->method("addNotice")->with("You are unsubcribed from 1234");
+        $messageManagerMock->expects($this->once())->method("addNotice")->with("You are unsubcribed from " . self::LIST);
 
         return $messageManagerMock;
     }
@@ -93,17 +97,17 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
         $unsubscribeMock
             ->expects($this->once())
             ->method("setEmail")
-            ->with("gonzalo@ebizmarts.com")
+            ->with(self::EMAIL)
             ->willReturnSelf();
         $unsubscribeMock
             ->expects($this->once())
             ->method("setList")
-            ->with("1234")
+            ->with(self::LIST)
             ->willReturnSelf();
         $unsubscribeMock
             ->expects($this->once())
             ->method("setStoreId")
-            ->with("default")
+            ->with(self::STORE)
             ->willReturnSelf();
         $unsubscribeMock
             ->expects($this->exactly(2))
@@ -141,9 +145,9 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
             ->expects($this->exactly(3))
             ->method("addFieldToFilter")
             ->withConsecutive(
-                ["main_table.email", ["eq" => "gonzalo@ebizmarts.com"]],
-                ["main_table.list", ["eq" => "1234"]],
-                ["main_table.store_id", ["eq" => "default"]]
+                ["main_table.email", ["eq" => self::EMAIL]],
+                ["main_table.list", ["eq" => self::LIST]],
+                ["main_table.store_id", ["eq" => self::STORE]]
             )
             ->willReturnSelf();
 
