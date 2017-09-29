@@ -21,7 +21,9 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
                 \Ebizmarts\Mandrill\Controller\Autoresponder\Unsubscribe::class, ["context" => $this->makeContext()]
             );
 
-        $unsubscribeController->execute();
+        $unsubscribeResult = $unsubscribeController->execute();
+
+        $this->assertInstanceOf("\Magento\Framework\Controller\Result\Redirect", $unsubscribeResult);
     }
 
     /**
@@ -52,11 +54,29 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
     {
         $context = $this->getMockBuilder(\Magento\Backend\App\Action\Context::class)->disableOriginalConstructor()->getMock();
 
-        $context->expects($this->exactly(3))->method("getRequest")->willReturn($this->makeRequestObject());
+        $context->expects($this->once())->method("getRequest")->willReturn($this->makeRequestObject());
         $context->expects($this->exactly(2))->method("getObjectManager")->willReturn($this->makeObjectManagerMock());
         $context->expects($this->exactly(2))->method("getMessageManager")->willReturn($this->makeMessageManagerMock());
+        $context->expects($this->exactly(2))->method("getResultRedirectFactory")->willReturn($this->makeResultRedirectMock());
 
         return $context;
+    }
+
+    private function makeResultRedirectMock()
+    {
+        $resultRedirectFactoryMock = $this->getMockBuilder(\Magento\Framework\Controller\Result\RedirectFactory::class)
+            ->setMethods(["create"])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $resultRedirectMock = $this->getMockBuilder(\Magento\Framework\Controller\Result\Redirect::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $resultRedirectMock->expects($this->once())->method("setPath")->with("/");
+
+        $resultRedirectFactoryMock->expects($this->once())->method("create")->willReturn($resultRedirectMock);
+
+        return $resultRedirectFactoryMock;
     }
 
     private function makeMessageManagerMock()
@@ -110,7 +130,7 @@ class UnsubscribeTest extends \PHPUnit_Framework_TestCase
             ->with(self::STORE)
             ->willReturnSelf();
         $unsubscribeMock
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method("setUnsubscribedAt")
             ->withAnyParameters()
             ->willReturnSelf();
