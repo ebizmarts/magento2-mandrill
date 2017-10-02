@@ -104,4 +104,15 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     {
         return $this->api->getApi();
     }
+
+    /**
+     * Get message
+     *
+     * @return \Magento\Framework\Mail\MessageInterface
+     * @since 100.2.0
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 }
