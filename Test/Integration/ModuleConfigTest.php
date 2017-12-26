@@ -2,6 +2,9 @@
 
 namespace Ebizmarts\Mandrill\Test\Integration;
 
+use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\App\DeploymentConfig\Reader;
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Module\ModuleList;
 use Magento\TestFramework\ObjectManager;
@@ -38,15 +41,19 @@ class ModuleConfigTest extends \PHPUnit_Framework_TestCase
     {
         // The tests by default point to the wrong config directory for this test.
         $directoryList = $this->objectManager->create(
-            \Magento\Framework\App\Filesystem\DirectoryList::class,
+            DirectoryList::class,
             ['root' => BP]
         );
+
+        /** @var \Magento\Framework\App\DeploymentConfig\Reader $deploymentConfigReader */
         $deploymentConfigReader = $this->objectManager->create(
-            \Magento\Framework\App\DeploymentConfig\Reader::class,
+            Reader::class,
             ['dirList' => $directoryList]
         );
+
+        /** @var \Magento\Framework\App\DeploymentConfig $deploymentConfig */
         $deploymentConfig = $this->objectManager->create(
-            \Magento\Framework\App\DeploymentConfig::class,
+            DeploymentConfig::class,
             ['reader' => $deploymentConfigReader]
         );
 
@@ -56,5 +63,10 @@ class ModuleConfigTest extends \PHPUnit_Framework_TestCase
             ['config' => $deploymentConfig]
         );
         $this->assertTrue($moduleList->has(self::MODULE_NAME));
+
+        $moduleInformation = $moduleList->getOne(self::MODULE_NAME);
+        $this->assertArrayHasKey("sequence", $moduleInformation);
+        $this->assertCount(1, $moduleInformation["sequence"]);
+        $this->assertEquals("Magento_Config", $moduleInformation["sequence"][0]);
     }
 }
