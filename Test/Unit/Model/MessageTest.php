@@ -15,7 +15,7 @@ namespace Ebizmarts\Mandrill\Test\Unit\Model;
 use \Ebizmarts\Mandrill\Model\Message;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
 
-class MessageTest extends \PHPUnit_Framework_TestCase
+class MessageTest extends \PHPUnit\Framework\TestCase
 {
     private $helperMock;
     private $apiMock;
@@ -71,7 +71,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $this->disableMandrill();
         $this->_message->setSubject('subject');
-        \PHPUnit_Framework_Assert::assertAttributeEquals(null, "subject", $this->_message);
+        \PHPUnit\Framework\Assert::assertAttributeEquals(null, "subject", $this->_message);
     }
     /**
      * @covers \Ebizmarts\Mandrill\Model\Message::setBody
@@ -137,10 +137,10 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $this->disableMandrill();
         $this->_message->addTo('to');
-        \PHPUnit_Framework_Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
+        \PHPUnit\Framework\Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
 
         $this->_message->addTo(array('to1','to2'));
-        \PHPUnit_Framework_Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
+        \PHPUnit\Framework\Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
     }
 
     /**

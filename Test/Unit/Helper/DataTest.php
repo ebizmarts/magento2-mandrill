@@ -14,7 +14,7 @@ namespace Ebizmarts\Mandrill\Test\Unit\Helper;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
-class DataTest extends \PHPUnit_Framework_TestCase
+class DataTest extends \PHPUnit\Framework\TestCase
 {
     protected $_scopeMock;
     protected $_helper;

@@ -14,7 +14,7 @@ namespace Ebizmarts\Mandrill\Test\Unit\Controller\Adminhtml\Email;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
-class TestTest extends \PHPUnit_Framework_TestCase
+class TestTest extends \PHPUnit\Framework\TestCase
 {
     protected $request;
     protected $helper;
@@ -25,7 +25,9 @@ class TestTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $objectManager = new ObjectManager($this);
-        $this->request = $this->getMock('Magento\Framework\App\Request\Http', [], [], '', false);
+        $this->request = $this->getMockBuilder('Magento\Framework\App\Request\Http')
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->request->expects($this->any())
             ->method('getParam')
             ->with('email')
@@ -70,7 +72,7 @@ class TestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test::execute
+     * @covers \Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test::execute
      */
     public function testExecute()
     {

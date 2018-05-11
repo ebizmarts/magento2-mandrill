@@ -2,7 +2,7 @@
 
 namespace Ebizmarts\Mandrill\Test\Unit\Model\Plugin;
 
-class TransportInterfaceFactoryTest extends \PHPUnit_Framework_TestCase
+class TransportInterfaceFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Main TransportInterfaceFactory test class
