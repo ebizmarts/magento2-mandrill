@@ -4,7 +4,7 @@ namespace Ebizmarts\Mandrill\Test\Unit\Controller\Autoresponder;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
-class UnsubscribeTest extends \PHPUnit_Framework_TestCase
+class UnsubscribeTest extends \PHPUnit\Framework\TestCase
 {
 
     const EMAIL = "gonzalo@ebizmarts.com";

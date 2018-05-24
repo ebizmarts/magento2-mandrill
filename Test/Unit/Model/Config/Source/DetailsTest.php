@@ -14,7 +14,7 @@ namespace Ebizmarts\Mandrill\Test\Unit\Model\Config\Source;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
-class DetailsTest extends \PHPUnit_Framework_TestCase
+class DetailsTest extends \PHPUnit\Framework\TestCase
 {
     protected $_details;
 

@@ -9,7 +9,7 @@ use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Module\ModuleList;
 use Magento\TestFramework\ObjectManager;
 
-class ModuleConfigTest extends \PHPUnit_Framework_TestCase
+class ModuleConfigTest extends \PHPUnit\Framework\TestCase
 {
     const MODULE_NAME = 'Ebizmarts_Mandrill';
 

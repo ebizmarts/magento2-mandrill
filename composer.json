@@ -24,6 +24,7 @@
         "forum": "http://ebizmarts.com/forums/view/1"
     },
     "require" : {
-        "mandrill/mandrill": "1.0.*"
+        "mandrill/mandrill": "1.0.*",
+        "magento/module-sales": "^101.0.3"
     }
 }
