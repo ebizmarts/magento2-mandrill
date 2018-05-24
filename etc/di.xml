@@ -19,5 +19,12 @@
     <type name="Magento\Config\Model\Config">
         <plugin name="mandrill-save" type="Ebizmarts\Mandrill\Model\Plugin\Config" sortOrder="10"/>
     </type>
+    <type name="Magento\Config\Model\Config\TypePool">
+        <arguments>
+            <argument name="sensitive" xsi:type="array">
+                <item name="mandrill/general/apikey" xsi:type="string">1</item>
+            </argument>
+        </arguments>
+    </type>
     <type name="Ebizmarts\Mandrill\Model\Message"/>
 </config>
