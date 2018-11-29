@@ -16,7 +16,7 @@ script:
   - cd ..
   - wget https://gist.githubusercontent.com/centerax/5e42abec89d62a1308ba/raw/4b3242361c0690e234266afb3520c2940ac1055a/auth.json
   - /bin/cp auth.json ~/.composer/
-  - composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=2.1.9
+  - composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=2.1.16
   - mkdir -p project-community-edition/app/code/Ebizmarts/Mandrill
   - /bin/cp -r magento2-mandrill/* project-community-edition/app/code/Ebizmarts/Mandrill
   - sh -c "if [ '$TEST_SUITE' = 'unittests' ]; then cd project-community-edition && /bin/cp app/code/Ebizmarts/Mandrill/phpunit_config.xml dev/tests/unit/ && ./vendor/bin/phpunit -c dev/tests/unit/phpunit_config.xml app/code/Ebizmarts/Mandrill/Test/Unit --coverage-text; fi"
