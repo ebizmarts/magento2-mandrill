@@ -14,6 +14,7 @@ before_script:
   - sleep 60
 
 script:
+  - echo "{}" > /home/travis/.config/composer/composer.json
   - cd ..
   - wget https://gist.githubusercontent.com/centerax/5e42abec89d62a1308ba/raw/4b3242361c0690e234266afb3520c2940ac1055a/auth.json
   - composer -vvv create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=2.2.4
