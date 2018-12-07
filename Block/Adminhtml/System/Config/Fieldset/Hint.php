@@ -11,6 +11,8 @@
 
 namespace Ebizmarts\Mandrill\Block\Adminhtml\System\Config\Fieldset;
 
+use Ebizmarts\Mandrill\Model\Config\ModuleVersion;
+
 class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework\Data\Form\Element\Renderer\RendererInterface
 {
     /**
@@ -21,27 +23,29 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
     protected $_metaData;
-    /**
-     * @var \Magento\Framework\Module\ModuleList\Loader
-     */
-    protected $_loader;
 
     /**
+     * @var ModuleVersion
+     */
+    private $moduleVersion;
+
+    /**
+     * Hint constructor.
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\App\ProductMetadataInterface $productMetaData
-     * @param \Magento\Framework\Module\ModuleList\Loader $loader
+     * @param ModuleVersion $moduleVersion
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\App\ProductMetadataInterface $productMetaData,
-        \Magento\Framework\Module\ModuleList\Loader $loader,
+        ModuleVersion $moduleVersion,
         array $data = []
     ) {
     
         parent::__construct($context, $data);
-        $this->_metaData = $productMetaData;
-        $this->_loader = $loader;
+        $this->_metaData     = $productMetaData;
+        $this->moduleVersion = $moduleVersion;
     }
 
     /**
@@ -80,11 +84,6 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
     }
     public function getVersion()
     {
-        $modules = $this->_loader->load();
-        $v = "";
-        if (isset($modules['Ebizmarts_Mandrill'])) {
-            $v =$modules['Ebizmarts_Mandrill']['setup_version'];
-        }
-        return $v;
+        return $this->moduleVersion->getModuleVersion('Ebizmarts_Mandrill');
     }
 }
