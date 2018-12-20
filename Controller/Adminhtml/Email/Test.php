@@ -10,7 +10,6 @@
  */
 namespace Ebizmarts\Mandrill\Controller\Adminhtml\Email;
 
-use Magento\Framework\Object;
 use Magento\Framework\Controller\ResultFactory;
 
 class Test extends \Magento\Backend\App\Action
@@ -35,7 +34,7 @@ class Test extends \Magento\Backend\App\Action
         \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
         \Ebizmarts\Mandrill\Helper\Data $helper
     ) {
-    
+
         parent::__construct($context);
         $this->_transportBuilder = $transportBuilder;
         $this->_helper = $helper;
