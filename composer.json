@@ -25,6 +25,6 @@
     },
     "require" : {
         "mandrill/mandrill": "1.0.*",
-        "magento/module-sales": "^100.1.11"
+        "magento/module-sales": "^100.1.8"
     }
 }
