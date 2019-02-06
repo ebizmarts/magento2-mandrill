@@ -32,7 +32,7 @@ class SenderBuilder extends \Magento\Sales\Model\Order\Email\SenderBuilder
         array $attachments = []
     ) {
         /** @var MessageInterface $message */
-        $message = $objectManager->create(MailMessageInterface::class);
+        $message = $objectManager->create(\Ebizmarts\Mandrill\Model\Message::class);
         /** @var TransportBuilder $transportBuilder */
         $transportBuilder = $objectManager->create(
             TransportBuilder::class,
