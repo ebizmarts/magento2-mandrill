@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
-class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MessageInterface
+class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MailMessageInterface
 {
     private $subject     = null;
     private $mandrillBodyHtml    = null;
@@ -56,16 +56,27 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
             return parent::getSubject();
         }
     }
-
-    public function setBody($body)
+    public function setBodyHtml($html)
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            $this->mandrillMessageType == self::TYPE_TEXT ? $this->mandrillBodyText = $body : $this->mandrillBodyHtml = $body;
-        } else {
-            return parent::setBody($body);
-        }
-
+        $this->mandrillBodyHtml = $html;
+        $this->mandrillMessageType = self::TYPE_HTML;
         return $this;
+    }
+    public function setBodyText($text)
+    {
+        $this->mandrillMessageType = self::TYPE_TEXT;
+        $this->mandrillBodyText = $text;
+        return $this;
+    }
+    public function getRawMessage()
+    {
+        if ($this->mandrillBodyText) {
+            return $this->mandrillBodyText->toString();
+        } elseif ($this->mandrillBodyHtml) {
+            return $this->mandrillBodyHtml->toString();
+        } else {
+            return '';
+        }
     }
 
     public function getBody()
@@ -150,17 +161,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
             $this->addEmailBccAddressToAddresses($bccAddress);
         } else {
             parent::addBcc($bccAddress);
-        }
-
-        return $this;
-    }
-
-    public function setMessageType($type)
-    {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            $this->mandrillMessageType = $type;
-        } else {
-            parent::setMessageType($type);
         }
 
         return $this;
