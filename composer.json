@@ -6,7 +6,7 @@
     },
     "description": "Connect Mandrill with Magento",
     "type": "magento2-module",
-    "version": "3.3.15",
+    "version": "3.3.16",
     "authors": [
         {
             "name": "Ebizmarts Corp",
