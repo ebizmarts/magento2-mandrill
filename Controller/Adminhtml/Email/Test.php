@@ -10,7 +10,6 @@
  */
 namespace Ebizmarts\Mandrill\Controller\Adminhtml\Email;
 
-use Magento\Framework\Object;
 use Magento\Framework\Controller\ResultFactory;
 
 class Test extends \Magento\Backend\App\Action
