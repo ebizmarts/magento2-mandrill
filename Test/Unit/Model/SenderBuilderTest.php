@@ -18,7 +18,8 @@ use Magento\Framework\Mail\Template\TransportBuilderByStore;
 use \Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Email\Container\IdentityInterface;
 use Magento\Sales\Model\Order\Email\Container\Template;
-use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\Mail\MailMessageInterface;
+use Magento\Framework\Mail\Template\SenderResolverInterface;
 
 class SenderBuilderTest extends \PHPUnit\Framework\TestCase
 {
@@ -41,7 +42,7 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
             ->getMock();
 
         // Message object to get and test against
-        $messageMock = $this->getMockBuilder(MessageInterface::class)
+        $messageMock = $this->getMockBuilder(MailMessageInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
