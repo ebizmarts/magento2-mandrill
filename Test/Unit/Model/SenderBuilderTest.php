@@ -18,7 +18,8 @@ use Magento\Framework\Mail\Template\TransportBuilderByStore;
 use \Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Email\Container\IdentityInterface;
 use Magento\Sales\Model\Order\Email\Container\Template;
-use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\Mail\MailMessageInterface;
+use Magento\Framework\Mail\Template\SenderResolverInterface;
 
 class SenderBuilderTest extends \PHPUnit\Framework\TestCase
 {
@@ -41,7 +42,7 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
             ->getMock();
 
         // Message object to get and test against
-        $messageMock = $this->getMockBuilder(MessageInterface::class)
+        $messageMock = $this->getMockBuilder(MailMessageInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -50,6 +51,9 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $transportBuilderSenderMock = $this->getMockBuilder(TransportBuilderByStore::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $senderResolverMock = $this->getMockBuilder(SenderResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -73,6 +77,6 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
         $constructor = $reflection->getConstructor();
 
         // Invoke the mock Builder with a reflection of the constructor and our mock objects
-        $constructor->invoke($builder, $templateMock, $identityMock, $objectManagerMock);
+        $constructor->invoke($builder, $templateMock, $identityMock, $objectManagerMock, $senderResolverMock);
     }
 }

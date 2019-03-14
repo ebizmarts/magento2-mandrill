@@ -74,23 +74,43 @@ class MessageTest extends \PHPUnit\Framework\TestCase
         \PHPUnit\Framework\Assert::assertAttributeEquals(null, "subject", $this->_message);
     }
     /**
-     * @covers \Ebizmarts\Mandrill\Model\Message::setBody
+     * @covers \Ebizmarts\Mandrill\Model\Message::setBodyText
      * @covers \Ebizmarts\Mandrill\Model\Message::getBody
      */
-    public function testSetBody()
+    public function testSetBodyText()
     {
         $this->enableMandrill();
-        $this->_message->setBody('body');
+        $this->_message->setBodyText('body');
         $this->assertEquals('body', $this->_message->getBody());
     }
     /**
-     * @covers \Ebizmarts\Mandrill\Model\Message::setBody
+     * @covers \Ebizmarts\Mandrill\Model\Message::setBodyHtml
      * @covers \Ebizmarts\Mandrill\Model\Message::getBody
      */
-    public function testSetBodyMandrillNotEnabled()
+    public function testSetBodyHtml()
+    {
+        $this->enableMandrill();
+        $this->_message->setBodyHtml('body');
+        $this->assertEquals('body', $this->_message->getBody());
+    }
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::setBodyText
+     * @covers \Ebizmarts\Mandrill\Model\Message::getBody
+     */
+    public function testSetBodyTextMandrillNotEnabled()
     {
         $this->disableMandrill();
-        $this->_message->setBody('body');
+        $this->_message->setBodyText('body');
+        $this->assertInstanceOf('Zend_Mime_Part', $this->_message->getBody());
+    }
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::setBodyHtml
+     * @covers \Ebizmarts\Mandrill\Model\Message::getBody
+     */
+    public function testSetBodyHtmlMandrillNotEnabled()
+    {
+        $this->disableMandrill();
+        $this->_message->setBodyHtml('body');
         $this->assertInstanceOf('Zend_Mime_Part', $this->_message->getBody());
     }
 
