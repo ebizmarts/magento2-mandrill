@@ -52,6 +52,9 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
         $transportBuilderSenderMock = $this->getMockBuilder(TransportBuilderByStore::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $senderResolverMock = $this->getMockBuilder(SenderResolverInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         // Make sure the ObjectManager returns our mock Message
         $objectManagerMock->expects($this->at(0))
@@ -73,6 +76,6 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
         $constructor = $reflection->getConstructor();
 
         // Invoke the mock Builder with a reflection of the constructor and our mock objects
-        $constructor->invoke($builder, $templateMock, $identityMock, $objectManagerMock);
+        $constructor->invoke($builder, $templateMock, $identityMock, $objectManagerMock, $senderResolverMock);
     }
 }
