@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Ebizmarts_Mandrill" setup_version="3.2.16">
+    <module name="Ebizmarts_Mandrill" setup_version="3.2.17">
         <sequence>
             <module name="Magento_Config"/>
         </sequence>
