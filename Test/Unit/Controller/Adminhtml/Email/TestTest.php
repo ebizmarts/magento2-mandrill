@@ -20,6 +20,7 @@ class TestTest extends \PHPUnit\Framework\TestCase
     protected $helper;
     protected $test;
     protected $resultJson;
+    protected $storeManager;
 
 
     protected function setUp()
@@ -68,7 +69,25 @@ class TestTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $transportB->expects($this->once())->method('getTransport')->willReturn($transport);
 
-        $this->test = $objectManager->getObject('Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test', ['context'=>$context,'transportBuilder'=>$transportB,'helper'=>$helper]);
+        $storeManager = $this->getMockForAbstractClass(
+            Magento\Store\Model\StoreManagerInterface::class,
+            [],
+            '',
+            false
+        );
+
+        $store = $this->getMockForAbstractClass(
+            \Magento\Store\Api\Data\StoreInterface::class
+            [],
+            '',
+            false
+        );
+
+        $store->expects($this->once())->method('getId')->willReturn(1);
+
+        $storeManager->expects($this->once())->method('getStore')->willReturn($store);
+
+        $this->test = $objectManager->getObject('Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test', ['context'=>$context,'transportBuilder'=>$transportB,'helper'=>$helper, 'storeManager' => $storeManager]);
     }
 
     /**
