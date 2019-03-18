@@ -68,19 +68,15 @@ class TestTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $transportB->expects($this->once())->method('getTransport')->willReturn($transport);
 
-        $storeManager = $this->getMockForAbstractClass(
-            \Magento\Store\Model\StoreManagerInterface::class,
-            [],
-            '',
-            false
-        );
+        $storeManager = $this->getMockBuilder(\Magento\Store\Model\StoreManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getStore'])
+            ->getMockForAbstractClass();
 
-        $store = $this->getMockForAbstractClass(
-            \Magento\Store\Api\Data\StoreInterface::class
-            [],
-            '',
-            false
-        );
+        $store = $this->getMockBuilder(\Magento\Store\Api\Data\StoreInterface::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getId'])
+            ->getMockForAbstractClass();
 
         $store->expects($this->once())->method('getId')->willReturn(1);
 
