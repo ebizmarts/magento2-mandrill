@@ -69,7 +69,7 @@ class TestTest extends \PHPUnit\Framework\TestCase
         $transportB->expects($this->once())->method('getTransport')->willReturn($transport);
 
         $storeManager = $this->getMockForAbstractClass(
-            Magento\Store\Model\StoreManagerInterface::class,
+            \Magento\Store\Model\StoreManagerInterface::class,
             [],
             '',
             false
