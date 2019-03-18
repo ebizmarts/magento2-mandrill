@@ -68,21 +68,7 @@ class TestTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $transportB->expects($this->once())->method('getTransport')->willReturn($transport);
 
-        $storeManager = $this->getMockBuilder(\Magento\Store\Model\StoreManagerInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getStore'])
-            ->getMockForAbstractClass();
-
-        $store = $this->getMockBuilder(\Magento\Store\Api\Data\StoreInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getId'])
-            ->getMockForAbstractClass();
-
-        $store->expects($this->once())->method('getId')->willReturn(1);
-
-        $storeManager->expects($this->once())->method('getStore')->willReturn($store);
-
-        $this->test = $objectManager->getObject('Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test', ['context'=>$context,'transportBuilder'=>$transportB,'helper'=>$helper, 'storeManager' => $storeManager]);
+        $this->test = $objectManager->getObject('Ebizmarts\Mandrill\Controller\Adminhtml\Email\Test', ['context'=>$context,'transportBuilder'=>$transportB,'helper'=>$helper]);
     }
 
     /**
