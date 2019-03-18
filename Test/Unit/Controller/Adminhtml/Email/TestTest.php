@@ -20,7 +20,6 @@ class TestTest extends \PHPUnit\Framework\TestCase
     protected $helper;
     protected $test;
     protected $resultJson;
-    protected $storeManager;
 
 
     protected function setUp()
