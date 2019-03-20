@@ -79,7 +79,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     {
         if($this->mandrillHelper->isMandrillEnabled())
         {
-
             if ($this->mandrillBodyText) {
                 return $this->convertToString($this->mandrillBodyText);
             } elseif ($this->mandrillBodyHtml) {
@@ -88,6 +87,8 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
                 return '';
             }
         }
+
+        return parent::getRawMessage();
     }
 
     /**
