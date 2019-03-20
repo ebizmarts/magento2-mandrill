@@ -68,15 +68,52 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         $this->mandrillBodyText = $text;
         return $this;
     }
+
+    /**
+     * TODO:
+     *  sync repository from original and remove this method and
+     *  its use in the {@link \Ebizmarts\Mandrill\Model\Message::getRawMessage}
+     *  when bug will be fixed in the original repository.
+     */
     public function getRawMessage()
     {
-        if ($this->mandrillBodyText) {
-            return $this->mandrillBodyText->toString();
-        } elseif ($this->mandrillBodyHtml) {
-            return $this->mandrillBodyHtml->toString();
-        } else {
-            return '';
+        if($this->mandrillHelper->isMandrillEnabled())
+        {
+
+            if ($this->mandrillBodyText) {
+                return $this->convertToString($this->mandrillBodyText);
+            } elseif ($this->mandrillBodyHtml) {
+                return $this->convertToString($this->mandrillBodyHtml);
+            } else {
+                return '';
+            }
         }
+    }
+
+    /**
+     * Converts item to string.
+     * If item cannot be converted than returns empty string.
+     *
+     * This method is used to fix an error when sending e-mail when 'Mandrill' is disabled.
+     *
+     * @param mixed $item
+     *
+     * @return string
+     *
+     * @see https://github.com/ebizmarts/magento2-mandrill/issues/100
+     */
+    private function convertToString($item): string
+    {
+        if(is_null($item) || is_scalar($item)) {
+            return (string) $item;
+        } elseif (is_object($item)) {
+            if (method_exists($item, 'toString')) {
+                return (string) $item->toString();
+            } elseif(method_exists($item, '__toString')) {
+                return (string) $item;
+            }
+        }
+        return '';
     }
 
     public function getBody()
