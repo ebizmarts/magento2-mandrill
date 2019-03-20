@@ -68,27 +68,15 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         $this->mandrillBodyText = $text;
         return $this;
     }
-
-    /**
-     * TODO:
-     *  sync repository from original and remove this method and
-     *  its use in the {@link \Ebizmarts\Mandrill\Model\Message::getRawMessage}
-     *  when bug will be fixed in the original repository.
-     */
     public function getRawMessage()
     {
-        if($this->mandrillHelper->isMandrillEnabled())
-        {
-            if ($this->mandrillBodyText) {
-                return $this->convertToString($this->mandrillBodyText);
-            } elseif ($this->mandrillBodyHtml) {
-                return $this->convertToString($this->mandrillBodyHtml);
-            } else {
-                return '';
-            }
+        if ($this->mandrillBodyText) {
+            return $this->convertToString($this->mandrillBodyText);
+        } elseif ($this->mandrillBodyHtml) {
+            return $this->convertToString($this->mandrillBodyHtml);
+        } else {
+            return '';
         }
-
-        return parent::getRawMessage();
     }
 
     /**
@@ -96,6 +84,11 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
      * If item cannot be converted than returns empty string.
      *
      * This method is used to fix an error when sending e-mail when 'Mandrill' is disabled.
+     *
+     * TODO:
+     *  sync repository from original and remove this method and
+     *  its use in the {@link \Ebizmarts\Mandrill\Model\Message::getRawMessage}
+     *  when bug will be fixed in the original repository.
      *
      * @param mixed $item
      *
