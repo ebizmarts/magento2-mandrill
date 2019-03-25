@@ -23,9 +23,10 @@ class Test extends \Magento\Backend\App\Action
      * @var \Ebizmarts\Mandrill\Helper\Data
      */
     protected $_helper;
-
-    /** @var StoreManagerInterface */
-    public $storeManager;
+    /**
+     * @var StoreManagerInterface 
+     */
+    protected $storeManager;
 
     /**
      * Test constructor.
