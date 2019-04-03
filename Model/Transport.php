@@ -11,6 +11,9 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
+use Magento\Framework\Exception\MailException;
+use Psr\Log\LoggerInterface;
+
 class Transport implements \Magento\Framework\Mail\TransportInterface
 {
     /**
@@ -23,18 +26,23 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      */
     private $api;
 
+    /** @var LoggerInterface\ */
+    private $logger;
+
     /**
      * @param \Magento\Framework\Mail\MessageInterface $message
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Ebizmarts\Mandrill\Helper\Data $helper
+     * @param \Psr\Log\LoggerInterface                 $logger
+     * @param \Ebizmarts\Mandrill\Helper\Data          $helper
      */
     public function __construct(
         \Ebizmarts\Mandrill\Model\Message $message,
-        \Ebizmarts\Mandrill\Model\Api\Mandrill $api
+        \Ebizmarts\Mandrill\Model\Api\Mandrill $api,
+        LoggerInterface $logger
     ) {
-    
+
         $this->message = $message;
         $this->api     = $api;
+        $this->logger  = $logger;
     }
     public function sendMessage()
     {
@@ -45,9 +53,9 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         }
 
         $message    = array(
-            'subject' => $this->message->getSubject(),
-            'from_name' => $this->message->getFromName(),
-            'from_email'=> $this->message->getFrom(),
+            'subject'    => $this->message->getSubject(),
+            'from_name'  => $this->message->getFromName(),
+            'from_email' => $this->message->getFrom(),
         );
         foreach ($this->message->getTo() as $to) {
             $message['to'][] = array(
@@ -57,7 +65,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         foreach ($this->message->getBcc() as $bcc) {
             $message['to'][] = array(
                 'email' => $bcc,
-                'type' => 'bcc'
+                'type'  => 'bcc'
             );
         }
         if ($att = $this->message->getAttachments()) {
@@ -77,7 +85,19 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
 
         $result = $mandrillApiInstance->messages->send($message);
 
-        $this->processApiCallResult($result);
+        try {
+            $this->processApiCallResult($result);
+        } catch (MailException $e) {
+            $this->logger->error(
+                sprintf(
+                    'We got "rejected" status from Mandrill for email with subject "%s". ' .
+                    'Please review the customer email %s, and process it again. Error details: %s',
+                    $this->message->getSubject(),
+                    implode(', ', $this->message->getTo()),
+                    (string)$e
+                )
+            );
+        }
 
         return true;
     }
@@ -87,7 +107,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $currentResult = current($result);
 
         if (array_key_exists('status', $currentResult) && $currentResult['status'] == 'rejected') {
-            throw new \Magento\Framework\Exception\MailException(
+            throw new MailException(
                 new \Magento\Framework\Phrase("Email sending failed: %1", [$currentResult['reject_reason']])
             );
         }
