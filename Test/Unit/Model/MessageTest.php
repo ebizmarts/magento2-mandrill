@@ -91,7 +91,10 @@ class MessageTest extends \PHPUnit\Framework\TestCase
     {
         $this->disableMandrill();
         $this->_message->setBody('body');
-        $this->assertInstanceOf('Zend_Mime_Part', $this->_message->getBody());
+        $this->assertEquals('body', $this->_message->getBody());
+
+        $this->_message->setBody(new \Zend\Mime\Message());
+        $this->assertInstanceOf('\Zend\Mime\Message', $this->_message->getBody());
     }
 
     /**
@@ -117,6 +120,28 @@ class MessageTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::setFromAddress
+     * @covers \Ebizmarts\Mandrill\Model\Message::getFrom
+     */
+    public function testSetFromAddress()
+    {
+        $this->enableMandrill();
+        $this->_message->setFrom('from');
+        $this->assertEquals('from', $this->_message->getFrom());
+    }
+
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Message::setFromAddress
+     * @covers \Ebizmarts\Mandrill\Model\Message::getFrom
+     */
+    public function testSetFromAddressMandrillNotEnabled()
+    {
+        $this->disableMandrill();
+        $this->_message->setFromAddress('from');
+        $this->assertEquals('from', $this->_message->getFrom());
+    }
+
+    /**
      * @covers \Ebizmarts\Mandrill\Model\Message::addTo
      * @covers \Ebizmarts\Mandrill\Model\Message::getTo
      */
@@ -136,10 +161,10 @@ class MessageTest extends \PHPUnit\Framework\TestCase
     public function testAddToMandrillDisabled()
     {
         $this->disableMandrill();
-        $this->_message->addTo('to');
+        $this->_message->addTo('to@hostname');
         \PHPUnit\Framework\Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
 
-        $this->_message->addTo(array('to1','to2'));
+        $this->_message->addTo(array('to1@hostname','to2@hostname'));
         \PHPUnit\Framework\Assert::assertAttributeEquals(array(), "mandrillTo", $this->_message);
     }
 

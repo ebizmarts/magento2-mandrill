@@ -88,16 +88,38 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         }
     }
 
-    public function setFrom($fromAddress, $name = null)
+    public function setBody($body)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            if ($this->mandrillMessageType == self::TYPE_TEXT) {
+                $this->setBodyText($body);
+            } else {
+                $this->setBodyHtml($body);
+            }
+        } else {
+            return parent::setBody($body);
+        }
+    }
+
+    public function setFromAddress($fromAddress, $fromName = null)
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
             $this->mandrillFrom      = $fromAddress;
-            $this->_fromName = $name;
+            $this->_fromName = $fromName;
         } else {
-            parent::setFrom($fromAddress, $name);
+            parent::setFromAddress($fromAddress, $fromName);
         }
 
         return $this;
+    }
+
+    public function setFrom($fromAddress)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            return $this->setFromAddress($fromAddress, null);
+        }
+
+        return parent::setFrom($fromAddress);
     }
 
     public function getFromName()
