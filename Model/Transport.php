@@ -16,6 +16,7 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\ResourceModel\Order\Shipment as ShipmentResource;
 use Magento\Sales\Model\ResourceModel\Order\Invoice as InvoiceResource;
 use Magento\Sales\Model\ResourceModel\Order\Creditmemo as CreditmemoResource;
+use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 
 class Transport implements \Magento\Framework\Mail\TransportInterface
 {
@@ -72,17 +73,20 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     ];
 
     // Different type of emails that may be sent.
-    const TYPE_SHIPMENT = "shipment";
-    const TYPE_INVOICE = "invoice";
-    const TYPE_CREDITMEMO = "creditmemo";
+    const SHIPMENT = "shipment";
+    const INVOICE = "invoice";
+    const CREDITMEMO = "creditmemo";
+    const ORDER = "order";
+    const COMMENT = "comment";
 
     /**
      * List of document types that require email sending.
      */
     const EMAIL_DOCUMENT_TYPES_ARRAY = [
-        self::TYPE_SHIPMENT,
-        self::TYPE_INVOICE,
-        self::TYPE_CREDITMEMO
+        self::SHIPMENT,
+        self::INVOICE,
+        self::CREDITMEMO,
+        self::ORDER
     ];
 
     /**
@@ -245,17 +249,21 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $currentDocumentType = $this->getCurrentEmailDocumentType($templateVars);
 
         switch ($currentDocumentType) {
-            case self::TYPE_SHIPMENT:
+            case self::SHIPMENT:
                 $resource = $this->objectManager->create(ShipmentResource::class);
-                $object = $templateVars[self::TYPE_SHIPMENT];
+                $object = $templateVars[self::SHIPMENT];
                 break;
-            case self::TYPE_INVOICE:
+            case self::INVOICE:
                 $resource = $this->objectManager->create(InvoiceResource::class);
-                $object = $templateVars[self::TYPE_INVOICE];
+                $object = $templateVars[self::INVOICE];
                 break;
-            case self::TYPE_CREDITMEMO:
+            case self::CREDITMEMO:
                 $resource = $this->objectManager->create(CreditmemoResource::class);
-                $object = $templateVars[self::TYPE_CREDITMEMO];
+                $object = $templateVars[self::CREDITMEMO];
+                break;
+            case self::ORDER:
+                $resource = $this->objectManager->create(OrderResource::class);
+                $object = $templateVars[self::ORDER];
                 break;
             default:
                 $this->throwMailException();
@@ -273,10 +281,30 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $currentDocumentType = null;
         $varIds = array_keys($templateVars);
         foreach (self::EMAIL_DOCUMENT_TYPES_ARRAY as $posibleDocumentType) {
-            if (in_array($posibleDocumentType, $varIds) && $currentDocumentType === null) {
-                $currentDocumentType = $posibleDocumentType;
+            if ($this->isRealDocumentType($posibleDocumentType, $varIds, $currentDocumentType)) {
+                    $currentDocumentType = $posibleDocumentType;
             }
         }
         return $currentDocumentType;
+    }
+
+    /**
+     * @param $posibleDocumentType
+     * @param $varIds
+     * @param $currentDocumentType
+     * @return bool
+     */
+    private function isRealDocumentType($posibleDocumentType, $varIds, $currentDocumentType)
+    {
+        $isOneOfExpectedValues = in_array($posibleDocumentType, $varIds);
+        $typeNotFoundAlready = $currentDocumentType === null;
+
+        //Order type exists in all the emails, should skip it unless it is the last one
+        $isNotOrder = $posibleDocumentType != self::ORDER;
+
+        //When order is found, make sure there is not comment within the templateVars to avoid comment emails.
+        $isNotComment = !in_array(self::COMMENT, $varIds);
+
+        return $isOneOfExpectedValues && $typeNotFoundAlready && $isNotOrder || $isNotComment);
     }
 }
