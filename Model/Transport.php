@@ -11,6 +11,12 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
+use Magento\Sales\Model\Order\Email\Container\Template;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Model\ResourceModel\Order\Shipment as ShipmentResource;
+use Magento\Sales\Model\ResourceModel\Order\Invoice as InvoiceResource;
+use Magento\Sales\Model\ResourceModel\Order\Creditmemo as CreditmemoResource;
+
 class Transport implements \Magento\Framework\Mail\TransportInterface
 {
     /**
@@ -24,18 +30,82 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private $api;
 
     /**
-     * @param \Magento\Framework\Mail\MessageInterface $message
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Ebizmarts\Mandrill\Helper\Data $helper
+     * @var ObjectManagerInterface
+     */
+    private $objectManager;
+
+    /**
+     * @var array
+     */
+    private $sendCallResult;
+
+    /**
+     * @return array
+     */
+    public function getSendCallResult()
+    {
+        return $this->sendCallResult;
+    }
+
+    /**
+     * @param array $sendCallResult
+     */
+    public function setSendCallResult($sendCallResult)
+    {
+        $this->sendCallResult = $sendCallResult;
+    }
+
+    /**
+     * @var array | Exceptions to be catched to avoid repeated sending which affects reputation.
+     */
+    private $exceptionArray = [
+        "hard-bounce" => true,
+        "soft-bounce" => false,
+        "spam" => true,
+        "unsub" => true,
+        "custom" => true,
+        "invalid-sender" => true,
+        "invalid" => false,
+        "test-mode-limit" => false,
+        "unsigned" => false,
+        "rule" => true
+    ];
+
+    // Different type of emails that may be sent.
+    const TYPE_SHIPMENT = "shipment";
+    const TYPE_INVOICE = "invoice";
+    const TYPE_CREDITMEMO = "creditmemo";
+
+    /**
+     * List of document types that require email sending.
+     */
+    const EMAIL_DOCUMENT_TYPES_ARRAY = [
+        self::TYPE_SHIPMENT,
+        self::TYPE_INVOICE,
+        self::TYPE_CREDITMEMO
+    ];
+
+    /**
+     * Transport constructor.
+     * @param Message $message
+     * @param Api\Mandrill $api
+     * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
         \Ebizmarts\Mandrill\Model\Message $message,
-        \Ebizmarts\Mandrill\Model\Api\Mandrill $api
-    ) {
-    
+        \Ebizmarts\Mandrill\Model\Api\Mandrill $api,
+        ObjectManagerInterface $objectManager
+    )
+    {
         $this->message = $message;
-        $this->api     = $api;
+        $this->api = $api;
+        $this->objectManager = $objectManager;
     }
+
+    /**
+     * @return bool|void
+     * @throws \Magento\Framework\Exception\MailException
+     */
     public function sendMessage()
     {
         $mandrillApiInstance = $this->getMandrillApiInstance();
@@ -44,10 +114,10 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             return false;
         }
 
-        $message    = array(
+        $message = array(
             'subject' => $this->message->getSubject(),
             'from_name' => $this->message->getFromName(),
-            'from_email'=> $this->message->getFrom(),
+            'from_email' => $this->message->getFrom(),
         );
         foreach ($this->message->getTo() as $to) {
             $message['to'][] = array(
@@ -76,20 +146,23 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         }
 
         $result = $mandrillApiInstance->messages->send($message);
+        $this->setSendCallResult(current($result));
 
-        $this->processApiCallResult($result);
+        $this->processApiCallResult();
 
         return true;
     }
 
-    private function processApiCallResult($result)
+    /**
+     * @throws \Magento\Framework\Exception\MailException
+     */
+    private function processApiCallResult()
     {
-        $currentResult = current($result);
-
-        if (array_key_exists('status', $currentResult) && $currentResult['status'] == 'rejected') {
-            throw new \Magento\Framework\Exception\MailException(
-                new \Magento\Framework\Phrase("Email sending failed: %1", [$currentResult['reject_reason']])
-            );
+        if ($this->rejectReasonKeyExistsInResult()) {
+            if ($this->rejectReasonShouldBeCatched()) {
+                $this->updateSendEmailFlag();
+                $this->throwMailException();
+            }
         }
     }
 
@@ -110,5 +183,100 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     * Set send_email flag to null for the correct resource (invoice, shipment or creditmemo).
+     *
+     * @throws \Magento\Framework\Exception\MailException
+     */
+    private function updateSendEmailFlag()
+    {
+        list($resource, $object) = $this->getResourceAndObject();
+        $object->setSendEmail(null);
+        $object->setEmailSent(null);
+        $resource->saveAttribute($object, ['send_email', 'email_sent']);
+    }
+
+    /**
+     * @param $currentResult
+     * @throws \Magento\Framework\Exception\MailException
+     */
+    private function throwMailException()
+    {
+        $currentResult = $this->getSendCallResult();
+        $email = (array_key_exists('email', $currentResult)) ? $currentResult['email'] : '';
+        $rejectReason = (array_key_exists('reject_reason', $currentResult)) ? $currentResult['reject_reason'] : '';
+        if (array_key_exists('email', $currentResult) && array_key_exists('reject_reason', $currentResult)) {
+            $phrase = new \Magento\Framework\Phrase("Email sending for %1 was rejected. Reason: %2. Goto https://mandrillapp.com/activity for more information.", [$email, $rejectReason]);
+        } else {
+            $phrase = new \Magento\Framework\Phrase("Error sending email. Goto https://mandrillapp.com/activity for more information.");
+        }
+        throw new \Magento\Framework\Exception\MailException($phrase);
+    }
+
+    /**
+     * @param $currentResult
+     * @return bool
+     */
+    private function rejectReasonKeyExistsInResult()
+    {
+        $currentResult = $this->getSendCallResult();
+        return array_key_exists('status', $currentResult) && $currentResult['status'] == 'rejected' && array_key_exists('reject_reason', $currentResult);
+    }
+
+    /**
+     * @param $currentResult
+     * @return bool
+     */
+    private function rejectReasonShouldBeCatched()
+    {
+        $currentResult = $this->getSendCallResult();
+        return $this->exceptionArray[$currentResult['reject_reason']] === true;
+    }
+
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\MailException
+     */
+    private function getResourceAndObject()
+    {
+        $templateVars = $this->message->getTemplateContainer()->getTemplateVars();
+        $currentDocumentType = $this->getCurrentEmailDocumentType($templateVars);
+
+        switch ($currentDocumentType) {
+            case self::TYPE_SHIPMENT:
+                $resource = $this->objectManager->create(ShipmentResource::class);
+                $object = $templateVars[self::TYPE_SHIPMENT];
+                break;
+            case self::TYPE_INVOICE:
+                $resource = $this->objectManager->create(InvoiceResource::class);
+                $object = $templateVars[self::TYPE_INVOICE];
+                break;
+            case self::TYPE_CREDITMEMO:
+                $resource = $this->objectManager->create(CreditmemoResource::class);
+                $object = $templateVars[self::TYPE_CREDITMEMO];
+                break;
+            default:
+                $this->throwMailException();
+                break;
+        }
+        return array($resource, $object);
+    }
+
+    /**
+     * @param $templateVars
+     * @return null
+     */
+    private function getCurrentEmailDocumentType($templateVars)
+    {
+        $currentDocumentType = null;
+        $varIds = array_keys($templateVars);
+        foreach (self::EMAIL_DOCUMENT_TYPES_ARRAY as $posibleDocumentType) {
+            if (in_array($posibleDocumentType, $varIds) && $currentDocumentType === null) {
+                $currentDocumentType = $posibleDocumentType;
+            }
+        }
+        return $currentDocumentType;
     }
 }

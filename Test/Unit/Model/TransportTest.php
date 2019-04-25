@@ -13,6 +13,7 @@
 namespace Ebizmarts\Mandrill\Test\Unit\Model;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Magento\Sales\Model\Order\Email\Container\Template;
 use \Ebizmarts\Mandrill\Model\Transport;
 
 class TransportTest extends \PHPUnit\Framework\TestCase
@@ -79,6 +80,55 @@ class TransportTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(true, $this->_transport->sendMessage());
         $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
         $this->assertEquals(true, $this->_transport->sendMessage());
+    }
+
+    /**
+     * @covers \Ebizmarts\Mandrill\Model\Transport::sendMessage
+     */
+    public function testSendMessageReject()
+    {
+        $messageMock = $this->getMockBuilder('Mandrill\Messages')
+            ->disableOriginalConstructor()
+//            ->disableAutoload()
+            ->setMethods(array('send'))
+            ->getMock();
+        
+        $templateMock = $this->getMockBuilder(\Magento\Sales\Model\Order\Email\Container\Template::class)
+            ->disableOriginalConstructor()
+            ->setMethods(array('getTemplateVars'))
+            ->getMock();
+        
+        $templateMock->expects($this->once())->method('getTemplateVars')->willReturn(array());
+
+        $this->_message = $this->objectManager->getObject('Ebizmarts\Mandrill\Model\Message', ['templateContainer' => $templateMock]);
+        
+        $messageMock->expects($this->once())->method('send')->willReturnOnConsecutiveCalls(
+            [
+                [
+                    'status' => 'rejected',
+                    'email' => 'mailnotexist@ebizmarts.com',
+                    '_id' => 'da911aasd133',
+                    'reject_reason' => 'hard-bounce'
+                ]
+            ]
+        );
+        
+        $this->apiMock->expects($this->any())->method('getApi')->willReturn($this->mandrillApiMock);
+
+        $this->mandrillApiMock->messages = $messageMock;
+        $this->_transport                = $this->objectManager
+            ->getObject('Ebizmarts\Mandrill\Model\Transport', [
+                'message'=> $this->_message,
+                'helper'=> $this->helperMock,
+                'api'=>$this->apiMock
+                ]);
+
+        $this->_message->addTo('mailnotexist@ebizmarts.com');
+        $this->_message->addBcc('mailnotexist@ebizmarts.com');
+        $this->_message->setReplyTo("Santiago");
+        $this->_message->createAttachment("test att");
+        $this->expectException(\Magento\Framework\Exception\MailException::class);
+        $this->_transport->sendMessage();
     }
 
     /**

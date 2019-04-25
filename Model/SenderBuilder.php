@@ -32,7 +32,10 @@ class SenderBuilder extends \Magento\Sales\Model\Order\Email\SenderBuilder
         array $attachments = []
     ) {
         /** @var MessageInterface $message */
-        $message = $objectManager->create(\Ebizmarts\Mandrill\Model\Message::class);
+        $message = $objectManager->create(
+            \Ebizmarts\Mandrill\Model\Message::class,
+            ["templateContainer" => $templateContainer]
+        );
         /** @var TransportBuilder $transportBuilder */
         $transportBuilder = $objectManager->create(
             TransportBuilder::class,
@@ -46,6 +49,7 @@ class SenderBuilder extends \Magento\Sales\Model\Order\Email\SenderBuilder
         parent::__construct($templateContainer, $identityContainer, $transportBuilder, $transportBuilderByStore);
         $this->senderResolver = $senderResolver;
     }
+    
     protected function configureEmailTemplate()
     {
         parent::configureEmailTemplate();
