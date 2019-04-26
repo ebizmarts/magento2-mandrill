@@ -119,28 +119,33 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             return false;
         }
 
-        $messageData = array(
+        $messageData = [
             'subject' => $message->getSubject(),
             'from_name' => $message->getFromName(),
             'from_email' => $message->getFrom(),
-        );
+        ];
+
         foreach ($message->getTo() as $to) {
-            $messageData['to'][] = array(
+            $messageData['to'][] = [
                 'email' => $to
-            );
+            ];
         }
+
         foreach ($message->getBcc() as $bcc) {
-            $messageData['to'][] = array(
+            $messageData['to'][] = [
                 'email' => $bcc,
                 'type' => 'bcc'
-            );
+            ];
         }
+
         if ($att = $message->getAttachments()) {
             $messageData['attachments'] = $att;
         }
+
         if ($headers = $message->getHeaders()) {
             $messageData['headers'] = $headers;
         }
+        
         switch ($message->getType()) {
             case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
                 $messageData['html'] = $message->getBody();
@@ -197,12 +202,12 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private function rejectReasonKeyExistsInResult()
     {
         $currentResult = $this->getSendCallResult();
-        
+
         $isStatusAvailable = $this->isStatusAvailable($currentResult);
         $isStatusRejected = $this->isStatusRejected($currentResult);
-        
+
         $isRejectedReasonAvailable = $this->isRejectReasonAvailable($currentResult);
-        
+
         return $isStatusAvailable && $isStatusRejected && $isRejectedReasonAvailable;
     }
 
@@ -286,7 +291,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 $this->throwMailException();
                 break;
         }
-        return array($resource, $object);
+        return [$resource, $object];
     }
 
     /**
@@ -297,10 +302,10 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     {
         $currentDocumentType = null;
         foreach (self::EMAIL_DOCUMENT_TYPES_ARRAY as $posibleDocumentType) {
-            
+
             $isCurrentDocTypeEmpty = $this->isCurrentDocTypeEmpty($currentDocumentType);
             $isActualDocumentType = $this->isActualDocumentType($posibleDocumentType, $templateVars);
-            
+
             if ($isCurrentDocTypeEmpty && $isActualDocumentType) {
                 $currentDocumentType = $posibleDocumentType;
             }
