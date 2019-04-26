@@ -305,6 +305,6 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         //When order is found, make sure there is not comment within the templateVars to avoid comment emails.
         $isNotComment = !in_array(self::COMMENT, $varIds);
 
-        return $isOneOfExpectedValues && $typeNotFoundAlready && $isNotOrder || $isNotComment);
+        return $isOneOfExpectedValues && $typeNotFoundAlready && $isNotOrder || $isNotComment;
     }
 }
