@@ -197,7 +197,13 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private function rejectReasonKeyExistsInResult()
     {
         $currentResult = $this->getSendCallResult();
-        return $this->isStatusAvailable($currentResult) && $this->isStatusRejected($currentResult) && $this->isRejectReasonAvailable($currentResult);
+        
+        $isStatusAvailable = $this->isStatusAvailable($currentResult);
+        $isStatusRejected = $this->isStatusRejected($currentResult);
+        
+        $isRejectedReasonAvailable = $this->isRejectReasonAvailable($currentResult);
+        
+        return $isStatusAvailable && $isStatusRejected && $isRejectedReasonAvailable;
     }
 
     /**
@@ -291,7 +297,11 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     {
         $currentDocumentType = null;
         foreach (self::EMAIL_DOCUMENT_TYPES_ARRAY as $posibleDocumentType) {
-            if ($this->isCurrentDocTypeEmpty($currentDocumentType) && $this->isActualDocumentType($posibleDocumentType, $templateVars)) {
+            
+            $isCurrentDocTypeEmpty = $this->isCurrentDocTypeEmpty($currentDocumentType);
+            $isActualDocumentType = $this->isActualDocumentType($posibleDocumentType, $templateVars);
+            
+            if ($isCurrentDocTypeEmpty && $isActualDocumentType) {
                 $currentDocumentType = $posibleDocumentType;
             }
         }
