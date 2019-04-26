@@ -112,70 +112,50 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      */
     public function sendMessage()
     {
+        $message = $this->getMessage();
         $mandrillApiInstance = $this->getMandrillApiInstance();
 
         if ($mandrillApiInstance === null) {
             return false;
         }
 
-        $message = array(
-            'subject' => $this->message->getSubject(),
-            'from_name' => $this->message->getFromName(),
-            'from_email' => $this->message->getFrom(),
+        $messageData = array(
+            'subject' => $message->getSubject(),
+            'from_name' => $message->getFromName(),
+            'from_email' => $message->getFrom(),
         );
-        foreach ($this->message->getTo() as $to) {
-            $message['to'][] = array(
+        foreach ($message->getTo() as $to) {
+            $messageData['to'][] = array(
                 'email' => $to
             );
         }
-        foreach ($this->message->getBcc() as $bcc) {
-            $message['to'][] = array(
+        foreach ($message->getBcc() as $bcc) {
+            $messageData['to'][] = array(
                 'email' => $bcc,
                 'type' => 'bcc'
             );
         }
-        if ($att = $this->message->getAttachments()) {
-            $message['attachments'] = $att;
+        if ($att = $message->getAttachments()) {
+            $messageData['attachments'] = $att;
         }
-        if ($headers = $this->message->getHeaders()) {
-            $message['headers'] = $headers;
+        if ($headers = $message->getHeaders()) {
+            $messageData['headers'] = $headers;
         }
-        switch ($this->message->getType()) {
+        switch ($message->getType()) {
             case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
-                $message['html'] = $this->message->getBody();
+                $messageData['html'] = $message->getBody();
                 break;
             case \Magento\Framework\Mail\MessageInterface::TYPE_TEXT:
-                $message['text'] = $this->message->getBody();
+                $messageData['text'] = $message->getBody();
                 break;
         }
 
-        $result = $mandrillApiInstance->messages->send($message);
+        $result = $mandrillApiInstance->messages->send($messageData);
         $this->setSendCallResult(current($result));
 
         $this->processApiCallResult();
 
         return true;
-    }
-
-    /**
-     * @throws \Magento\Framework\Exception\MailException
-     */
-    private function processApiCallResult()
-    {
-        if ($this->rejectReasonKeyExistsInResult()) {
-            if ($this->rejectReasonShouldBeCatched()) {
-                $this->updateSendEmailFlag();
-                $this->throwMailException();
-            }
-        }
-    }
-
-    /**
-     * @return \Mandrill
-     */
-    private function getMandrillApiInstance()
-    {
-        return $this->api->getApi();
     }
 
     /**
@@ -190,33 +170,24 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     }
 
     /**
-     * Set send_email flag to null for the correct resource (invoice, shipment or creditmemo).
-     *
-     * @throws \Magento\Framework\Exception\MailException
+     * @return \Mandrill
      */
-    private function updateSendEmailFlag()
+    private function getMandrillApiInstance()
     {
-        list($resource, $object) = $this->getResourceAndObject();
-        $object->setSendEmail(null);
-        $object->setEmailSent(null);
-        $resource->saveAttribute($object, ['send_email', 'email_sent']);
+        return $this->api->getApi();
     }
 
     /**
-     * @param $currentResult
      * @throws \Magento\Framework\Exception\MailException
      */
-    private function throwMailException()
+    private function processApiCallResult()
     {
-        $currentResult = $this->getSendCallResult();
-        $email = (array_key_exists('email', $currentResult)) ? $currentResult['email'] : '';
-        $rejectReason = (array_key_exists('reject_reason', $currentResult)) ? $currentResult['reject_reason'] : '';
-        if (array_key_exists('email', $currentResult) && array_key_exists('reject_reason', $currentResult)) {
-            $phrase = new \Magento\Framework\Phrase("Email sending for %1 was rejected. Reason: %2. Goto https://mandrillapp.com/activity for more information.", [$email, $rejectReason]);
-        } else {
-            $phrase = new \Magento\Framework\Phrase("Error sending email. Goto https://mandrillapp.com/activity for more information.");
+        if ($this->rejectReasonKeyExistsInResult()) {
+            if ($this->rejectReasonShouldBeCatched()) {
+                $this->updateSendEmailFlag();
+                $this->throwMailException();
+            }
         }
-        throw new \Magento\Framework\Exception\MailException($phrase);
     }
 
     /**
@@ -240,12 +211,25 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     }
 
     /**
+     * Set send_email flag to null for the correct resource (invoice, shipment or creditmemo).
+     *
+     * @throws \Magento\Framework\Exception\MailException
+     */
+    private function updateSendEmailFlag()
+    {
+        list($resource, $object) = $this->getResourceAndObject();
+        $object->setSendEmail(null);
+        $object->setEmailSent(null);
+        $resource->saveAttribute($object, ['send_email', 'email_sent']);
+    }
+
+    /**
      * @return array
      * @throws \Magento\Framework\Exception\MailException
      */
     private function getResourceAndObject()
     {
-        $templateVars = $this->message->getTemplateContainer()->getTemplateVars();
+        $templateVars = $this->getMessage()->getTemplateContainer()->getTemplateVars();
         $currentDocumentType = $this->getCurrentEmailDocumentType($templateVars);
 
         switch ($currentDocumentType) {
@@ -282,7 +266,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $varIds = array_keys($templateVars);
         foreach (self::EMAIL_DOCUMENT_TYPES_ARRAY as $posibleDocumentType) {
             if ($this->isRealDocumentType($posibleDocumentType, $varIds, $currentDocumentType)) {
-                    $currentDocumentType = $posibleDocumentType;
+                $currentDocumentType = $posibleDocumentType;
             }
         }
         return $currentDocumentType;
@@ -297,14 +281,31 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private function isRealDocumentType($posibleDocumentType, $varIds, $currentDocumentType)
     {
         $isOneOfExpectedValues = in_array($posibleDocumentType, $varIds);
-        $typeNotFoundAlready = $currentDocumentType === null;
+        $docTypeIsEmpty = $currentDocumentType === null;
 
         //Order type exists in all the emails, should skip it unless it is the last one
-        $isNotOrder = $posibleDocumentType != self::ORDER;
+        $isOrder = $posibleDocumentType === self::ORDER;
 
         //When order is found, make sure there is not comment within the templateVars to avoid comment emails.
         $isNotComment = !in_array(self::COMMENT, $varIds);
 
-        return $isOneOfExpectedValues && $typeNotFoundAlready && $isNotOrder || $isNotComment;
+        return $isOneOfExpectedValues && $docTypeIsEmpty && (!$isOrder || $isNotComment);
+    }
+
+    /**
+     * @param $currentResult
+     * @throws \Magento\Framework\Exception\MailException
+     */
+    private function throwMailException()
+    {
+        $currentResult = $this->getSendCallResult();
+        $email = (array_key_exists('email', $currentResult)) ? $currentResult['email'] : '';
+        $rejectReason = (array_key_exists('reject_reason', $currentResult)) ? $currentResult['reject_reason'] : '';
+        if (array_key_exists('email', $currentResult) && array_key_exists('reject_reason', $currentResult)) {
+            $phrase = new \Magento\Framework\Phrase("Email sending for %1 was rejected. Reason: %2. Goto https://mandrillapp.com/activity for more information.", [$email, $rejectReason]);
+        } else {
+            $phrase = new \Magento\Framework\Phrase("Error sending email. Goto https://mandrillapp.com/activity for more information.");
+        }
+        throw new \Magento\Framework\Exception\MailException($phrase);
     }
 }
