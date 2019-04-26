@@ -7,7 +7,7 @@ use Magento\Framework\App\DeploymentConfig\Reader;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Module\ModuleList;
-use Magento\TestFramework\ObjectManager;
+use Magento\Framework\App\ObjectManager;
 
 class ModuleConfigTest extends \PHPUnit\Framework\TestCase
 {
@@ -32,8 +32,15 @@ class ModuleConfigTest extends \PHPUnit\Framework\TestCase
 
     public function testTheModuleIsConfiguredInTheTestEnvironment()
     {
+        $deploymentConfig = $this->objectManager->create(\Magento\Framework\App\DeploymentConfig::class);
+        $loader = $this->objectManager->create(ModuleList\Loader::class);
         /** @var $moduleList ModuleList */
-        $moduleList = $this->objectManager->create(ModuleList::class);
+        $moduleList = $this->objectManager->create(ModuleList::class,
+            [
+                'deploymentConfig' => $deploymentConfig,
+                'loader' => $loader
+            ]
+        );
         $this->assertTrue($moduleList->has(self::MODULE_NAME));
     }
 

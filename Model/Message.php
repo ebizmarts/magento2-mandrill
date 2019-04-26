@@ -11,6 +11,8 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
+use Magento\Sales\Model\Order\Email\Container\Template;
+
 class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MessageInterface
 {
     private $subject     = null;
@@ -28,12 +30,21 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     private $mandrillHelper;
 
     /**
+     * @var Template
+     */
+    private $templateContainer;
+
+    /**
      * Message constructor.
      * @param \Ebizmarts\Mandrill\Helper\Data $helper
      */
-    public function __construct(\Ebizmarts\Mandrill\Helper\Data $helper)
+    public function __construct(
+        \Ebizmarts\Mandrill\Helper\Data $helper,
+        Template $templateContainer
+    )
     {
         $this->mandrillHelper = $helper;
+        $this->templateContainer = $templateContainer;
         parent::__construct();
     }
 
@@ -327,5 +338,13 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         $email                     = $this->_filterEmail($email);
         $name                      = $this->_filterName($name);
         $this->mandrillHeaders['Reply-To'] = sprintf('%s <%s>', $name, $email);
+    }
+
+    /**
+     * @return Template
+     */
+    public function getTemplateContainer()
+    {
+        return $this->templateContainer;
     }
 }
