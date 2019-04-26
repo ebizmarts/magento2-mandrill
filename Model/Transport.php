@@ -197,7 +197,34 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private function rejectReasonKeyExistsInResult()
     {
         $currentResult = $this->getSendCallResult();
-        return array_key_exists('status', $currentResult) && $currentResult['status'] == 'rejected' && array_key_exists('reject_reason', $currentResult);
+        return $this->isStatusAvailable($currentResult) && $this->isStatusRejected($currentResult) && $this->isRejectReasonAvailable($currentResult);
+    }
+
+    /**
+     * @param $currentResult
+     * @return bool
+     */
+    private function isStatusAvailable($currentResult)
+    {
+        return array_key_exists('status', $currentResult);
+    }
+
+    /**
+     * @param $currentResult
+     * @return bool
+     */
+    private function isStatusRejected($currentResult)
+    {
+        return $currentResult['status'] == 'rejected';
+    }
+
+    /**
+     * @param $currentResult
+     * @return bool
+     */
+    private function isRejectReasonAvailable($currentResult)
+    {
+        return array_key_exists('reject_reason', $currentResult);
     }
 
     /**
@@ -263,9 +290,8 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private function getCurrentEmailDocumentType($templateVars)
     {
         $currentDocumentType = null;
-        $varIds = array_keys($templateVars);
         foreach (self::EMAIL_DOCUMENT_TYPES_ARRAY as $posibleDocumentType) {
-            if ($this->isRealDocumentType($posibleDocumentType, $varIds, $currentDocumentType)) {
+            if ($this->isCurrentDocTypeEmpty($currentDocumentType) && $this->isActualDocumentType($posibleDocumentType, $templateVars)) {
                 $currentDocumentType = $posibleDocumentType;
             }
         }
@@ -273,23 +299,60 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     }
 
     /**
-     * @param $posibleDocumentType
-     * @param $varIds
      * @param $currentDocumentType
      * @return bool
      */
-    private function isRealDocumentType($posibleDocumentType, $varIds, $currentDocumentType)
+    private function isCurrentDocTypeEmpty($currentDocumentType)
     {
-        $isOneOfExpectedValues = in_array($posibleDocumentType, $varIds);
-        $docTypeIsEmpty = $currentDocumentType === null;
+        return $currentDocumentType === null;
+    }
+
+    /**
+     * @param $posibleDocumentType
+     * @param $templateVars
+     * @return bool
+     */
+    private function isActualDocumentType($posibleDocumentType, $templateVars)
+    {
+        $isOneOfExpectedTypes = $this->isOneOfExpectedTypes($posibleDocumentType, $templateVars);
 
         //Order type exists in all the emails, should skip it unless it is the last one
-        $isOrder = $posibleDocumentType === self::ORDER;
+        $isOrderType = $this->isOrderType($posibleDocumentType);
 
-        //When order is found, make sure there is not comment within the templateVars to avoid comment emails.
-        $isNotComment = !in_array(self::COMMENT, $varIds);
+        //When order is found, make sure there is no comment within the templateVars to avoid comment emails.
+        $isComment = $this->isCommentEmail($templateVars);
 
-        return $isOneOfExpectedValues && $docTypeIsEmpty && (!$isOrder || $isNotComment);
+        return $isOneOfExpectedTypes && (!$isOrderType || !$isComment);
+    }
+
+    /**
+     * @param $posibleDocumentType
+     * @param $templateVars
+     * @return bool
+     */
+    private function isOneOfExpectedTypes($posibleDocumentType, $templateVars)
+    {
+        $varIds = array_keys($templateVars);
+        return in_array($posibleDocumentType, $varIds);
+    }
+
+    /**
+     * @param $posibleDocumentType
+     * @return bool
+     */
+    private function isOrderType($posibleDocumentType)
+    {
+        return $posibleDocumentType === self::ORDER;
+    }
+
+    /**
+     * @param $templateVars
+     * @return bool
+     */
+    private function isCommentEmail($templateVars)
+    {
+        $varIds = array_keys($templateVars);
+        return in_array(self::COMMENT, $varIds);
     }
 
     /**
@@ -299,13 +362,20 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private function throwMailException()
     {
         $currentResult = $this->getSendCallResult();
-        $email = (array_key_exists('email', $currentResult)) ? $currentResult['email'] : '';
-        $rejectReason = (array_key_exists('reject_reason', $currentResult)) ? $currentResult['reject_reason'] : '';
-        if (array_key_exists('email', $currentResult) && array_key_exists('reject_reason', $currentResult)) {
-            $phrase = new \Magento\Framework\Phrase("Email sending for %1 was rejected. Reason: %2. Goto https://mandrillapp.com/activity for more information.", [$email, $rejectReason]);
+        if ($this->isEmailAvailable($currentResult) && $this->isRejectReasonAvailable($currentResult)) {
+            $phrase = new \Magento\Framework\Phrase("Email sending for %1 was rejected. Reason: %2. Goto https://mandrillapp.com/activity for more information.", [$currentResult['email'], $currentResult['reject_reason']]);
         } else {
             $phrase = new \Magento\Framework\Phrase("Error sending email. Goto https://mandrillapp.com/activity for more information.");
         }
         throw new \Magento\Framework\Exception\MailException($phrase);
+    }
+
+    /**
+     * @param $currentResult
+     * @return bool
+     */
+    private function isEmailAvailable($currentResult)
+    {
+        return array_key_exists('email', $currentResult);
     }
 }
