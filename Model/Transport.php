@@ -12,11 +12,10 @@
 namespace Ebizmarts\Mandrill\Model;
 
 use Magento\Sales\Model\Order\Email\Container\Template;
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Sales\Model\ResourceModel\Order\Shipment as ShipmentResource;
-use Magento\Sales\Model\ResourceModel\Order\Invoice as InvoiceResource;
-use Magento\Sales\Model\ResourceModel\Order\Creditmemo as CreditmemoResource;
-use Magento\Sales\Model\ResourceModel\Order as OrderResource;
+use Magento\Sales\Model\Order\ShipmentFactory;
+use Magento\Sales\Model\Order\InvoiceFactory;
+use Magento\Sales\Model\Order\CreditmemoFactory;
+use Magento\Sales\Model\OrderFactory;
 
 class Transport implements \Magento\Framework\Mail\TransportInterface
 {
@@ -31,30 +30,29 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     private $api;
 
     /**
-     * @var ObjectManagerInterface
+     * @var OrderFactory
      */
-    private $objectManager;
+    private $orderFactory;
+
+    /**
+     * @var InvoiceFactory
+     */
+    private $invoiceFactory;
+
+    /**
+     * @var ShipmentFactory
+     */
+    private $shipmentFactory;
+
+    /**
+     * @var CreditmemoFactory
+     */
+    private $creditmemoFactory;
 
     /**
      * @var array
      */
     private $sendCallResult;
-
-    /**
-     * @return array
-     */
-    public function getSendCallResult()
-    {
-        return $this->sendCallResult;
-    }
-
-    /**
-     * @param array $sendCallResult
-     */
-    public function setSendCallResult($sendCallResult)
-    {
-        $this->sendCallResult = $sendCallResult;
-    }
 
     /**
      * @var array | Exceptions to be catched to avoid repeated sending which affects reputation.
@@ -93,17 +91,85 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      * Transport constructor.
      * @param Message $message
      * @param Api\Mandrill $api
-     * @param ObjectManagerInterface $objectManager
+     * @param OrderFactory $orderFactory
+     * @param ShipmentFactory $shipmentFactory
+     * @param InvoiceFactory $invoiceFactory
+     * @param CreditmemoFactory $creditmemoFactory
      */
     public function __construct(
         \Ebizmarts\Mandrill\Model\Message $message,
         \Ebizmarts\Mandrill\Model\Api\Mandrill $api,
-        ObjectManagerInterface $objectManager
+        OrderFactory $orderFactory,
+        ShipmentFactory $shipmentFactory,
+        InvoiceFactory $invoiceFactory,
+        CreditmemoFactory $creditmemoFactory
     )
     {
         $this->message = $message;
         $this->api = $api;
-        $this->objectManager = $objectManager;
+        $this->orderFactory = $orderFactory;
+        $this->shipmentFactory = $shipmentFactory;
+        $this->invoiceFactory = $invoiceFactory;
+        $this->creditmemoFactory = $creditmemoFactory;
+    }
+
+    /**
+     * @return OrderFactory
+     */
+    public function getOrderFactory()
+    {
+        return $this->orderFactory;
+    }
+
+    /**
+     * @return InvoiceFactory
+     */
+    public function getInvoiceFactory()
+    {
+        return $this->invoiceFactory;
+    }
+
+    /**
+     * @return ShipmentFactory
+     */
+    public function getShipmentFactory()
+    {
+        return $this->shipmentFactory;
+    }
+
+    /**
+     * @return CreditmemoFactory
+     */
+    public function getCreditmemoFactory()
+    {
+        return $this->creditmemoFactory;
+    }
+
+    /**
+     * @param array $sendCallResult
+     */
+    public function setSendCallResult($sendCallResult)
+    {
+        $this->sendCallResult = $sendCallResult;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSendCallResult()
+    {
+        return $this->sendCallResult;
+    }
+
+    /**
+     * Get message
+     *
+     * @return \Magento\Framework\Mail\MessageInterface
+     * @since 100.2.0
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 
     /**
@@ -145,7 +211,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         if ($headers = $message->getHeaders()) {
             $messageData['headers'] = $headers;
         }
-        
+
         switch ($message->getType()) {
             case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
                 $messageData['html'] = $message->getBody();
@@ -161,17 +227,6 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $this->processApiCallResult();
 
         return true;
-    }
-
-    /**
-     * Get message
-     *
-     * @return \Magento\Framework\Mail\MessageInterface
-     * @since 100.2.0
-     */
-    public function getMessage()
-    {
-        return $this->message;
     }
 
     /**
@@ -269,22 +324,23 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     {
         $templateVars = $this->getMessage()->getTemplateContainer()->getTemplateVars();
         $currentDocumentType = $this->getCurrentEmailDocumentType($templateVars);
+        $orderResource = $this->getOrderFactory()->create();
 
         switch ($currentDocumentType) {
             case self::SHIPMENT:
-                $resource = $this->objectManager->create(ShipmentResource::class);
+                $resource = $this->getShipmentFactory()->create($templateVars[self::ORDER]);
                 $object = $templateVars[self::SHIPMENT];
                 break;
             case self::INVOICE:
-                $resource = $this->objectManager->create(InvoiceResource::class);
+                $resource = $this->getInvoiceFactory()->create();
                 $object = $templateVars[self::INVOICE];
                 break;
             case self::CREDITMEMO:
-                $resource = $this->objectManager->create(CreditmemoResource::class);
+                $resource = $this->getCreditmemoFactory()->createByOrder($templateVars[self::ORDER]);
                 $object = $templateVars[self::CREDITMEMO];
                 break;
             case self::ORDER:
-                $resource = $this->objectManager->create(OrderResource::class);
+                $resource = $orderResource;
                 $object = $templateVars[self::ORDER];
                 break;
             default:
