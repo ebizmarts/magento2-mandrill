@@ -87,7 +87,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         } elseif ($this->mandrillBodyHtml) {
             return $this->convertToString($this->mandrillBodyHtml);
         } else {
-            return '';
+            return parent::getRawMessage();
         }
     }
 
