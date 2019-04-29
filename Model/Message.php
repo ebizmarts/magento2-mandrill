@@ -56,17 +56,29 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
             return parent::getSubject();
         }
     }
+
     public function setBodyHtml($html)
     {
-        $this->mandrillBodyHtml = $html;
-        $this->mandrillMessageType = self::TYPE_HTML;
-        return $this;
+        if ($this->mandrillHelper->isMandrillEnabled()){
+            $this->mandrillBodyHtml = $html;
+            $this->mandrillMessageType = self::TYPE_HTML;
+            return $this;
+        }else{
+            return parent::setBodyHtml($html);
+        }
+
     }
+
     public function setBodyText($text)
     {
-        $this->mandrillMessageType = self::TYPE_TEXT;
-        $this->mandrillBodyText = $text;
-        return $this;
+        if ($this->mandrillHelper->isMandrillEnabled()){
+            $this->mandrillMessageType = self::TYPE_TEXT;
+            $this->mandrillBodyText = $text;
+            return $this;
+        }else{
+            return parent::setBodyText($text);
+        }
+
     }
     public function getRawMessage()
     {
