@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
-class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MessageInterface
+class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MailMessageInterface
 {
     private $subject     = null;
     private $mandrillBodyHtml    = null;
@@ -56,16 +56,27 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
             return parent::getSubject();
         }
     }
-
-    public function setBody($body)
+    public function setBodyHtml($html)
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            $this->mandrillMessageType == self::TYPE_TEXT ? $this->mandrillBodyText = $body : $this->mandrillBodyHtml = $body;
-        } else {
-            return parent::setBody($body);
-        }
-
+        $this->mandrillBodyHtml = $html;
+        $this->mandrillMessageType = self::TYPE_HTML;
         return $this;
+    }
+    public function setBodyText($text)
+    {
+        $this->mandrillMessageType = self::TYPE_TEXT;
+        $this->mandrillBodyText = $text;
+        return $this;
+    }
+    public function getRawMessage()
+    {
+        if ($this->mandrillBodyText) {
+            return $this->mandrillBodyText->toString();
+        } elseif ($this->mandrillBodyHtml) {
+            return $this->mandrillBodyHtml->toString();
+        } else {
+            return '';
+        }
     }
 
     public function getBody()
@@ -77,16 +88,38 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         }
     }
 
-    public function setFrom($fromAddress, $name = null)
+    public function setBody($body)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            if ($this->mandrillMessageType == self::TYPE_TEXT) {
+                $this->setBodyText($body);
+            } else {
+                $this->setBodyHtml($body);
+            }
+        } else {
+            return parent::setBody($body);
+        }
+    }
+
+    public function setFromAddress($fromAddress, $fromName = null)
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
             $this->mandrillFrom      = $fromAddress;
-            $this->_fromName = $name;
+            $this->_fromName = $fromName;
         } else {
-            parent::setFrom($fromAddress, $name);
+            parent::setFromAddress($fromAddress, $fromName);
         }
 
         return $this;
+    }
+
+    public function setFrom($fromAddress)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            return $this->setFromAddress($fromAddress, null);
+        }
+
+        return parent::setFrom($fromAddress);
     }
 
     public function getFromName()
@@ -155,17 +188,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         return $this;
     }
 
-    public function setMessageType($type)
-    {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            $this->mandrillMessageType = $type;
-        } else {
-            parent::setMessageType($type);
-        }
-
-        return $this;
-    }
-
     public function getMessageType()
     {
         return $this->mandrillMessageType;
@@ -227,12 +249,12 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     protected function _filterEmail($email)
     {
         $rule = array("\r" => '',
-                      "\n" => '',
-                      "\t" => '',
-                      '"'  => '',
-                      ','  => '',
-                      '<'  => '',
-                      '>'  => '',
+            "\n" => '',
+            "\t" => '',
+            '"'  => '',
+            ','  => '',
+            '<'  => '',
+            '>'  => '',
         );
 
         return strtr($email, $rule);
@@ -241,11 +263,11 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     protected function _filterName($name)
     {
         $rule = array("\r" => '',
-                      "\n" => '',
-                      "\t" => '',
-                      '"'  => "'",
-                      '<'  => '[',
-                      '>'  => ']',
+            "\n" => '',
+            "\t" => '',
+            '"'  => "'",
+            '<'  => '[',
+            '>'  => ']',
         );
 
         return trim(strtr($name, $rule));
