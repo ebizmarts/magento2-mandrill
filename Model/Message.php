@@ -104,7 +104,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     public function setFromAddress($fromAddress, $fromName = null)
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
-            $this->mandrillFrom      = $fromAddress;
+            $this->mandrillFrom = $fromAddress;
             $this->_fromName = $fromName;
         } else {
             parent::setFromAddress($fromAddress, $fromName);
@@ -131,8 +131,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
             return $this->mandrillFrom;
-        } else {
-            return parent::getFrom();
         }
     }
 
@@ -140,8 +138,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
             return $this->mandrillMessageType;
-        } else {
-            return parent::getType();
         }
     }
 
@@ -188,6 +184,15 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         return $this;
     }
 
+    public function setMessageType($type)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            $this->mandrillMessageType = $type;
+        } else {
+            parent::setMessageType($type);
+        }
+    }
+
     public function getMessageType()
     {
         return $this->mandrillMessageType;
@@ -203,8 +208,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         if ($this->mandrillHelper->isMandrillEnabled()) {
             $att = array('type' => $mimeType,'name' => $filename,'content'=> base64_encode($body));
             array_push($this->att, $att);
-        } else {
-            parent::createAttachment($body, $mimeType, $disposition, $encoding, $filename);
         }
 
         return $this;
@@ -219,8 +222,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
             $this->addHeaderToHeaders($name, $value);
-        } else {
-            parent::addHeader($name, $value, $append);
         }
 
         return $this;
@@ -230,8 +231,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
             return $this->mandrillHeaders;
-        } else {
-            return parent::getHeaders();
         }
     }
 
