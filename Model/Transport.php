@@ -22,6 +22,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      * @var Api\Mandrill
      */
     private $api;
+    private $helper;
 
     /**
      * @param \Magento\Framework\Mail\MessageInterface $message
@@ -30,62 +31,65 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      */
     public function __construct(
         \Ebizmarts\Mandrill\Model\Message $message,
-        \Ebizmarts\Mandrill\Model\Api\Mandrill $api
+        \Ebizmarts\Mandrill\Model\Api\Mandrill $api,
+        \Ebizmarts\Mandrill\Helper\Data $helper
     ) {
     
-        $this->message = $message;
-        $this->api     = $api;
+        $this->message  = $message;
+        $this->api      = $api;
+        $this->helper   = $helper;
     }
     public function sendMessage()
     {
-        $mandrillApiInstance = $this->getMandrillApiInstance();
+        try {
+            $mandrillApiInstance = $this->getMandrillApiInstance();
 
-        if ($mandrillApiInstance === null) {
-            return false;
-        }
+            if ($mandrillApiInstance === null) {
+                return false;
+            }
 
-        $message    = array(
-            'subject' => $this->message->getSubject(),
-            'from_name' => $this->message->getFromName(),
-            'from_email'=> $this->message->getFrom(),
-        );
-        foreach ($this->message->getTo() as $to) {
-            $message['to'][] = array(
-                'email' => $to
+            $message = array(
+                'subject' => $this->message->getSubject(),
+                'from_name' => $this->message->getFromName(),
+                'from_email' => $this->message->getFrom(),
             );
+            foreach ($this->message->getTo() as $to) {
+                $message['to'][] = array(
+                    'email' => $to
+                );
+            }
+            foreach ($this->message->getBcc() as $bcc) {
+                $message['to'][] = array(
+                    'email' => $bcc,
+                    'type' => 'bcc'
+                );
+            }
+            if ($att = $this->message->getAttachments()) {
+                $message['attachments'] = $att;
+            }
+            if ($headers = $this->message->getHeaders()) {
+                $message['headers'] = $headers;
+            }
+            switch ($this->message->getType()) {
+                case \Magento\Framework\Mail\MailMessageInterface::TYPE_HTML:
+                    $message['html'] = $this->message->getBody();
+                    break;
+                case \Magento\Framework\Mail\MailMessageInterface::TYPE_TEXT:
+                    $message['text'] = $this->message->getBody();
+                    break;
+            }
+            $result = $mandrillApiInstance->messages->send($message);
+            $this->processApiCallResult($result);
+        } catch(\Exception $e) {
+            $this->helper->log($e->getMessage());
         }
-        foreach ($this->message->getBcc() as $bcc) {
-            $message['to'][] = array(
-                'email' => $bcc,
-                'type' => 'bcc'
-            );
-        }
-        if ($att = $this->message->getAttachments()) {
-            $message['attachments'] = $att;
-        }
-        if ($headers = $this->message->getHeaders()) {
-            $message['headers'] = $headers;
-        }
-        switch ($this->message->getType()) {
-            case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
-                $message['html'] = $this->message->getBody();
-                break;
-            case \Magento\Framework\Mail\MessageInterface::TYPE_TEXT:
-                $message['text'] = $this->message->getBody();
-                break;
-        }
-
-        $result = $mandrillApiInstance->messages->send($message);
-
-        $this->processApiCallResult($result);
-
-        return true;
+//
+//        return true;
     }
 
     private function processApiCallResult($result)
     {
         $currentResult = current($result);
-
         if (array_key_exists('status', $currentResult) && $currentResult['status'] == 'rejected') {
             throw new \Magento\Framework\Exception\MailException(
                 new \Magento\Framework\Phrase("Email sending failed: %1", [$currentResult['reject_reason']])

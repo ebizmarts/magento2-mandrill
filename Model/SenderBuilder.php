@@ -5,7 +5,7 @@ use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Mail\Template\TransportBuilderByStore;
 use Magento\Sales\Model\Order\Email\Container\IdentityInterface;
 use Magento\Sales\Model\Order\Email\Container\Template;
-use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\Mail\MailMessageInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Mail\Template\SenderResolverInterface;
 
