@@ -68,6 +68,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         $this->mandrillBodyText = $text;
         return $this;
     }
+    
     public function getRawMessage()
     {
         if ($this->mandrillBodyText) {
@@ -129,20 +130,12 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
 
     public function getFrom()
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            return $this->mandrillFrom;
-        } else {
-            return parent::getFrom();
-        }
+        return $this->mandrillFrom;
     }
 
     public function getType()
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            return $this->mandrillMessageType;
-        } else {
-            return parent::getType();
-        }
+        return $this->mandrillMessageType;
     }
 
     public function getTo()
@@ -188,6 +181,11 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         return $this;
     }
 
+    public function setMessageType($type)
+    {
+        return $this->mandrillMessageType = $type;
+    }
+
     public function getMessageType()
     {
         return $this->mandrillMessageType;
@@ -203,8 +201,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         if ($this->mandrillHelper->isMandrillEnabled()) {
             $att = array('type' => $mimeType,'name' => $filename,'content'=> base64_encode($body));
             array_push($this->att, $att);
-        } else {
-            parent::createAttachment($body, $mimeType, $disposition, $encoding, $filename);
         }
 
         return $this;
@@ -228,11 +224,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
 
     public function getHeaders()
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            return $this->mandrillHeaders;
-        } else {
-            return parent::getHeaders();
-        }
+        return $this->mandrillHeaders;
     }
 
     public function setReplyTo($email, $name = null)

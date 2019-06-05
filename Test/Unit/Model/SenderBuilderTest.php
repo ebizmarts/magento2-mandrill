@@ -13,12 +13,14 @@
 namespace Ebizmarts\Mandrill\Test\Unit\Model;
 
 use Ebizmarts\Mandrill\Model\SenderBuilder;
+use Magento\Email\Model\Template\SenderResolver;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Mail\Template\TransportBuilderByStore;
-use \Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order\Email\Container\IdentityInterface;
 use Magento\Sales\Model\Order\Email\Container\Template;
 use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\Mail\Template\SenderResolverInterface;
 
 class SenderBuilderTest extends \PHPUnit\Framework\TestCase
 {
@@ -29,14 +31,19 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        // Mock parameters
         $templateMock = $this->getMockBuilder(Template::class)
             ->disableOriginalConstructor()
             ->getMock();
+
         $identityMock = $this->getMockBuilder(IdentityInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
+
         $objectManagerMock = $this->getMockBuilder(ObjectManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $senderResolverMock = $this->getMockBuilder(SenderResolverInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -49,6 +56,7 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
         $transportBuilderMock = $this->getMockBuilder(TransportBuilder::class)
             ->disableOriginalConstructor()
             ->getMock();
+
         $transportBuilderSenderMock = $this->getMockBuilder(TransportBuilderByStore::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -63,6 +71,7 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
             ->method('create')
             ->with($this->equalTo(TransportBuilder::class), $this->contains($messageMock))
             ->will($this->returnValue($transportBuilderMock));
+
         $objectManagerMock->expects($this->at(2))
             ->method('create')
             ->with($this->equalTo(TransportBuilderByStore::class), $this->contains($messageMock))
@@ -73,6 +82,6 @@ class SenderBuilderTest extends \PHPUnit\Framework\TestCase
         $constructor = $reflection->getConstructor();
 
         // Invoke the mock Builder with a reflection of the constructor and our mock objects
-        $constructor->invoke($builder, $templateMock, $identityMock, $objectManagerMock);
+        $constructor->invoke($builder, $templateMock, $identityMock, $objectManagerMock, $senderResolverMock);
     }
 }

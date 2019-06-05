@@ -83,8 +83,8 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         } catch(\Exception $e) {
             $this->helper->log($e->getMessage());
         }
-//
-//        return true;
+
+        return true;
     }
 
     private function processApiCallResult($result)
