@@ -71,10 +71,10 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 $message['headers'] = $headers;
             }
             switch ($this->message->getType()) {
-                case \Magento\Framework\Mail\MailMessageInterface::TYPE_HTML:
+                case \Magento\Framework\Mail\MessageInterface::TYPE_HTML:
                     $message['html'] = $this->message->getBody();
                     break;
-                case \Magento\Framework\Mail\MailMessageInterface::TYPE_TEXT:
+                case \Magento\Framework\Mail\MessageInterface::TYPE_TEXT:
                     $message['text'] = $this->message->getBody();
                     break;
             }

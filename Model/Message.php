@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
-class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MailMessageInterface
+class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MessageInterface
 {
     private $subject     = null;
     private $mandrillBodyHtml    = null;
@@ -56,16 +56,26 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
             return parent::getSubject();
         }
     }
-    public function setBodyHtml($html)
+    public function setBodyHtml($html, $charset = null, $encoding = \Zend_Mime::ENCODING_QUOTEDPRINTABLE)
     {
-        $this->mandrillBodyHtml = $html;
-        $this->mandrillMessageType = self::TYPE_HTML;
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            $this->mandrillBodyHtml = $html;
+            $this->mandrillMessageType = self::TYPE_HTML;
+        } else {
+            $this->_bodyHtml = $html;
+            $this->messageType = self::TYPE_HTML;
+        }
         return $this;
     }
-    public function setBodyText($text)
+    public function setBodyText($text, $charset = null, $encoding = \Zend_Mime::ENCODING_QUOTEDPRINTABLE)
     {
-        $this->mandrillMessageType = self::TYPE_TEXT;
-        $this->mandrillBodyText = $text;
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            $this->mandrillMessageType = self::TYPE_TEXT;
+            $this->mandrillBodyText = $text;
+        } else {
+            $this->_bodyText = $text;
+            $this->messageType = self::TYPE_TEXT;
+        }
         return $this;
     }
     
@@ -114,13 +124,13 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         return $this;
     }
 
-    public function setFrom($fromAddress)
+    public function setFrom($fromAddress, $fromName = null)
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
-            return $this->setFromAddress($fromAddress, null);
+            return $this->setFromAddress($fromAddress, $fromName);
         }
 
-        return parent::setFrom($fromAddress);
+        return parent::setFrom($fromAddress, $fromName);
     }
 
     public function getFromName()
@@ -183,7 +193,10 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
 
     public function setMessageType($type)
     {
-        return $this->mandrillMessageType = $type;
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            return $this->mandrillMessageType = $type;
+        }
+        return parent::setMessageType($type);
     }
 
     public function getMessageType()
