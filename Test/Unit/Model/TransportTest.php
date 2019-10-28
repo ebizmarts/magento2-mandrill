@@ -74,7 +74,7 @@ class TransportTest extends \PHPUnit\Framework\TestCase
 
         $this->_message->addTo('gonzalo@ebizmarts.com');
         $this->_message->addBcc('gonzalo2@ebizmarts.com');
-        $this->_message->setReplyTo("gonzalo");
+        $this->_message->setReplyTo("gonzalo@ebizmarts.com");
         $this->_message->createAttachment("test att");
         $this->assertEquals(true, $this->_transport->sendMessage());
         $this->_message->setMessageType(\Magento\Framework\Mail\MessageInterface::TYPE_HTML);
