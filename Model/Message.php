@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\Mandrill\Model;
 
-class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MailMessageInterface
+class Message extends \Magento\Framework\Mail\Message implements \Magento\Framework\Mail\MessageInterface
 {
     private $subject     = null;
     private $mandrillBodyHtml    = null;
@@ -56,18 +56,29 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
             return parent::getSubject();
         }
     }
-    public function setBodyHtml($html)
+    public function setBodyHtml($html, $charset = null, $encoding = \Zend_Mime::ENCODING_QUOTEDPRINTABLE)
     {
-        $this->mandrillBodyHtml = $html;
-        $this->mandrillMessageType = self::TYPE_HTML;
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            $this->mandrillBodyHtml = $html;
+            $this->mandrillMessageType = self::TYPE_HTML;
+        } else {
+            $this->_bodyHtml = $html;
+            $this->messageType = self::TYPE_HTML;
+        }
         return $this;
     }
-    public function setBodyText($text)
+    public function setBodyText($text, $charset = null, $encoding = \Zend_Mime::ENCODING_QUOTEDPRINTABLE)
     {
-        $this->mandrillMessageType = self::TYPE_TEXT;
-        $this->mandrillBodyText = $text;
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            $this->mandrillMessageType = self::TYPE_TEXT;
+            $this->mandrillBodyText = $text;
+        } else {
+            $this->_bodyText = $text;
+            $this->messageType = self::TYPE_TEXT;
+        }
         return $this;
     }
+    
     public function getRawMessage()
     {
         if ($this->mandrillBodyText) {
@@ -88,16 +99,38 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         }
     }
 
-    public function setFrom($fromAddress, $name = null)
+    public function setBody($body)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            if ($this->mandrillMessageType == self::TYPE_TEXT) {
+                $this->setBodyText($body);
+            } else {
+                $this->setBodyHtml($body);
+            }
+        } else {
+            return parent::setBody($body);
+        }
+    }
+
+    public function setFromAddress($fromAddress, $fromName = null)
     {
         if ($this->mandrillHelper->isMandrillEnabled()) {
             $this->mandrillFrom      = $fromAddress;
-            $this->_fromName = $name;
+            $this->_fromName = $fromName;
         } else {
-            parent::setFrom($fromAddress, $name);
+            parent::setFromAddress($fromAddress, $fromName);
         }
 
         return $this;
+    }
+
+    public function setFrom($fromAddress, $fromName = null)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            return $this->setFromAddress($fromAddress, $fromName);
+        }
+
+        return parent::setFrom($fromAddress, $fromName);
     }
 
     public function getFromName()
@@ -107,20 +140,12 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
 
     public function getFrom()
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            return $this->mandrillFrom;
-        } else {
-            return parent::getFrom();
-        }
+        return $this->mandrillFrom;
     }
 
     public function getType()
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            return $this->mandrillMessageType;
-        } else {
-            return parent::getType();
-        }
+        return $this->mandrillMessageType;
     }
 
     public function getTo()
@@ -166,6 +191,14 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         return $this;
     }
 
+    public function setMessageType($type)
+    {
+        if ($this->mandrillHelper->isMandrillEnabled()) {
+            return $this->mandrillMessageType = $type;
+        }
+        return parent::setMessageType($type);
+    }
+
     public function getMessageType()
     {
         return $this->mandrillMessageType;
@@ -181,8 +214,6 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
         if ($this->mandrillHelper->isMandrillEnabled()) {
             $att = array('type' => $mimeType,'name' => $filename,'content'=> base64_encode($body));
             array_push($this->att, $att);
-        } else {
-            parent::createAttachment($body, $mimeType, $disposition, $encoding, $filename);
         }
 
         return $this;
@@ -206,11 +237,7 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
 
     public function getHeaders()
     {
-        if ($this->mandrillHelper->isMandrillEnabled()) {
-            return $this->mandrillHeaders;
-        } else {
-            return parent::getHeaders();
-        }
+        return $this->mandrillHeaders;
     }
 
     public function setReplyTo($email, $name = null)
@@ -227,12 +254,12 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     protected function _filterEmail($email)
     {
         $rule = array("\r" => '',
-                      "\n" => '',
-                      "\t" => '',
-                      '"'  => '',
-                      ','  => '',
-                      '<'  => '',
-                      '>'  => '',
+            "\n" => '',
+            "\t" => '',
+            '"'  => '',
+            ','  => '',
+            '<'  => '',
+            '>'  => '',
         );
 
         return strtr($email, $rule);
@@ -241,11 +268,11 @@ class Message extends \Magento\Framework\Mail\Message implements \Magento\Framew
     protected function _filterName($name)
     {
         $rule = array("\r" => '',
-                      "\n" => '',
-                      "\t" => '',
-                      '"'  => "'",
-                      '<'  => '[',
-                      '>'  => ']',
+            "\n" => '',
+            "\t" => '',
+            '"'  => "'",
+            '<'  => '[',
+            '>'  => ']',
         );
 
         return trim(strtr($name, $rule));
